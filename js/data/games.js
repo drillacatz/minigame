@@ -3,7 +3,8 @@
    Add new games by pushing an entry to GAMES_REGISTRY.
    ===================================================================== */
 
-const GAMES_REGISTRY = [
+// eslint-disable-next-line no-var
+var GAMES_REGISTRY = [
   {
     id:          'direction-dash',
     title:       'Direction Dash',
