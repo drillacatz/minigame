@@ -1,0 +1,26 @@
+/* ── Coming-soon (locked) card override ─────────────────────────── */
+.game-card--locked {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.game-card--locked::before,
+.game-card--locked::after { display: none; }
+
+.game-card__locked-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wide);
+  color: var(--clr-text-dim);
+  border: 1px solid var(--clr-border);
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  background: rgba(5, 5, 15, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}

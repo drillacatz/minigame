@@ -1,0 +1,88 @@
+/* =====================================================================
+   variables.css  —  design tokens for MINIVERSE
+   Cyberpunk / HUD aesthetic inspired by Stellar Blade
+   ===================================================================== */
+
+:root {
+  /* ── Palette ─────────────────────────────────── */
+  --clr-bg:        #05050f;   /* near-black with blue tint  */
+  --clr-surface:   #0c0c1e;   /* card backgrounds            */
+  --clr-surface-2: #131328;   /* slightly lighter panels     */
+  --clr-border:    #1e1e42;   /* subtle borders              */
+
+  --clr-cyan:      #00d4ff;   /* primary accent              */
+  --clr-cyan-dim:  rgba(0, 212, 255, 0.15);
+  --clr-cyan-glow: rgba(0, 212, 255, 0.4);
+  --clr-pink:      #ff2d8b;   /* secondary accent            */
+  --clr-pink-dim:  rgba(255, 45, 139, 0.15);
+  --clr-green:     #0aff9d;   /* success                     */
+  --clr-red:       #ff3f3f;   /* error / danger              */
+  --clr-gold:      #ffd700;   /* score / highlight           */
+
+  --clr-text:      #e2e2f2;   /* primary text                */
+  --clr-text-dim:  #6b6b99;   /* muted text                  */
+  --clr-text-inv:  #05050f;   /* text on bright backgrounds  */
+
+  /* ── Typography ─────────────────────────────── */
+  --font-display: 'Orbitron', 'Courier New', monospace;
+  --font-body:    'Exo 2', 'Segoe UI', system-ui, sans-serif;
+
+  --text-xs:   0.70rem;
+  --text-sm:   0.85rem;
+  --text-base: 1.00rem;
+  --text-md:   1.15rem;
+  --text-lg:   1.35rem;
+  --text-xl:   1.75rem;
+  --text-2xl:  2.25rem;
+  --text-3xl:  3.50rem;
+
+  --weight-light:  300;
+  --weight-reg:    400;
+  --weight-semi:   600;
+  --weight-bold:   700;
+  --weight-black:  900;
+
+  --tracking-tight: -0.02em;
+  --tracking-wide:   0.12em;
+  --tracking-wider:  0.25em;
+
+  /* ── Spacing scale ───────────────────────────── */
+  --sp-1:  0.25rem;
+  --sp-2:  0.50rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1.00rem;
+  --sp-5:  1.25rem;
+  --sp-6:  1.50rem;
+  --sp-8:  2.00rem;
+  --sp-10: 2.50rem;
+  --sp-12: 3.00rem;
+  --sp-16: 4.00rem;
+  --sp-20: 5.00rem;
+
+  /* ── Radius ──────────────────────────────────── */
+  --r-sm:   3px;
+  --r-md:   6px;
+  --r-lg:  12px;
+  --r-xl:  20px;
+
+  /* ── Shadows / glows ─────────────────────────── */
+  --glow-cyan:  0 0 12px var(--clr-cyan-glow), 0 0 30px rgba(0,212,255,0.2);
+  --glow-pink:  0 0 12px rgba(255,45,139,0.5), 0 0 30px rgba(255,45,139,0.2);
+  --glow-green: 0 0 12px rgba(10,255,157,0.5), 0 0 30px rgba(10,255,157,0.2);
+
+  /* ── Transitions ─────────────────────────────── */
+  --ease:     cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out: cubic-bezier(0.00, 0.00, 0.20, 1.00);
+  --t-fast:   120ms var(--ease);
+  --t-base:   220ms var(--ease);
+  --t-slow:   400ms var(--ease-out);
+
+  /* ── Layout ──────────────────────────────────── */
+  --container-max: 1400px;
+  --container-pad: var(--sp-6);
+
+  /* ── Game-card grid ──────────────────────────── */
+  --card-cols-desktop: 5;
+  --card-cols-mobile:  2;
+  --card-gap: var(--sp-4);
+}

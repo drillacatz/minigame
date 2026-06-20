@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Direction Dash — gameplay">
+  <title>Direction Dash – Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body class="game-body">
+
+  <!-- ── Timer bar (absolute top of viewport) ─────────────────── -->
+  <div class="timer-bar-wrap" role="progressbar"
+       aria-label="Time remaining" aria-valuemin="0" aria-valuemax="100">
+    <div class="timer-bar__fill" id="js-timer-fill"></div>
+  </div>
+
+  <!-- ── Top HUD ───────────────────────────────────────────────── -->
+  <div class="hud-top">
+    <a href="index.html" class="hud-back" aria-label="Back to title screen">‹ BACK</a>
+
+    <div class="hud-stats">
+      <div class="hud-stat">
+        <span class="hud-stat__label">DIFFICULTY</span>
+        <span class="hud-stat__value" id="js-diff-label">—</span>
+      </div>
+      <div class="hud-stat hud-stat--time">
+        <span class="hud-stat__label">TIME</span>
+        <span class="hud-stat__value" id="js-timer-label">9.0</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-stat__label">PROGRESS</span>
+        <span class="hud-stat__value" id="js-progress">0/0</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-stat__label">ERRORS</span>
+        <span class="hud-stat__value hud-stat__value--errors" id="js-errors">0</span>
+      </div>
+    </div>
+
+    <button class="hud-mode-btn" id="js-mode-toggle" aria-label="Switch input mode">
+      SWIPE MODE
+    </button>
+  </div>
+
+  <!-- ── Game arena (grid + all overlays share this space) ─────── -->
+  <div class="game-arena" id="js-game-area">
+
+    <!-- Direction grid – cells injected by renderer.js -->
+    <div class="grid" id="js-grid" role="grid" aria-label="Direction input grid"></div>
+
+    <!-- ── Countdown overlay ─── -->
+    <div class="overlay overlay--countdown" id="js-countdown"
+         role="status" aria-live="assertive" aria-label="Countdown">
+      <div class="overlay__box">
+        <span class="countdown-num" id="js-countdown-num">3</span>
+      </div>
+    </div>
+
+    <!-- ── Result overlay ─── -->
+    <div class="overlay overlay--result hidden" id="js-result"
+         role="dialog" aria-modal="true" aria-labelledby="js-result-title">
+      <div class="overlay__box result-box">
+        <h2 class="result-title" id="js-result-title">CLEARED!</h2>
+        <div class="result-stats" id="js-result-stats"></div>
+        <div class="result-actions">
+          <button class="game-btn game-btn--primary" id="js-btn-restart">PLAY AGAIN</button>
+          <a href="index.html" class="game-btn game-btn--secondary" id="js-btn-back">MAIN MENU</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .game-arena -->
+
+  <!-- ── Controls area ─────────────────────────────────────────── -->
+  <div class="controls-area">
+
+    <!-- D-pad (mobile / buttons mode, hidden by default on desktop) -->
+    <div class="dpad hidden" id="js-dpad" aria-label="Directional pad">
+      <div class="dpad__row">
+        <button class="dpad__btn" data-dir="up"    aria-label="Up">▲</button>
+      </div>
+      <div class="dpad__row dpad__row--mid">
+        <button class="dpad__btn" data-dir="left"  aria-label="Left">◄</button>
+        <div    class="dpad__center" aria-hidden="true">●</div>
+        <button class="dpad__btn" data-dir="right" aria-label="Right">►</button>
+      </div>
+      <div class="dpad__row">
+        <button class="dpad__btn" data-dir="down"  aria-label="Down">▼</button>
+      </div>
+    </div>
+
+    <!-- Keyboard hint (desktop, keyboard mode) -->
+    <div class="kb-hint" id="js-kb-hint" aria-label="Keyboard controls: W A S D">
+      <div class="kb-hint__row"><kbd class="key">W</kbd></div>
+      <div class="kb-hint__row">
+        <kbd class="key">A</kbd>
+        <kbd class="key">S</kbd>
+        <kbd class="key">D</kbd>
+      </div>
+      <p class="kb-hint__label">WASD to input</p>
+    </div>
+
+    <!-- Swipe hint -->
+    <div class="swipe-hint hidden" id="js-swipe-hint" aria-label="Swipe to input direction">
+      <div class="swipe-hint__icon">↕ ↔</div>
+      <p class="swipe-hint__label">SWIPE TO INPUT</p>
+    </div>
+
+  </div><!-- .controls-area -->
+
+  <!-- Scripts — load in dependency order -->
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

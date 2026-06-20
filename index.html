@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MINIVERSE – A collection of browser mini-games. No downloads. Just play.">
+  <title>MINIVERSE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/extras.css">
+</head>
+<body>
+
+  <!-- ── SITE HEADER ─────────────────────────────────────────── -->
+  <header class="site-header" role="banner">
+    <div class="container site-header__inner">
+      <a href="index.html" class="site-logo" aria-label="Miniverse home">
+        <span class="site-logo__bracket">[</span>MINI<span class="site-logo__accent">VERSE</span><span class="site-logo__bracket">]</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#games" class="site-nav__link">GAMES</a>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="site-nav__link site-nav__link--ghost">GITHUB</a>
+      </nav>
+    </div>
+    <!-- scan-line decoration -->
+    <div class="site-header__scan" aria-hidden="true"></div>
+  </header>
+
+  <!-- ── MAIN ─────────────────────────────────────────────────── -->
+  <main class="site-main" role="main">
+
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero__inner">
+        <p class="hero__eyebrow">// WELCOME TO</p>
+        <h1 class="hero__title" id="hero-title">MINIVERSE</h1>
+        <p class="hero__sub">A growing collection of browser mini-games.<br>No downloads. No installs. Just play.</p>
+        <a href="#games" class="hero__cta">EXPLORE GAMES ↓</a>
+      </div>
+      <div class="hero__grid-deco" aria-hidden="true">
+        <div class="hero__grid-line"></div>
+        <div class="hero__grid-line"></div>
+        <div class="hero__grid-line"></div>
+      </div>
+    </section>
+
+    <!-- GAMES GRID -->
+    <section class="games-section" id="games" aria-labelledby="games-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="section-header__eyebrow">// GAME LIBRARY</p>
+          <h2 class="section-header__title" id="games-title">SELECT GAME</h2>
+        </header>
+        <!-- Cards injected by main.js; role=list is announced by screen readers -->
+        <div class="games-grid" id="js-games-grid" role="list" aria-label="Available games">
+          <div class="games-grid__placeholder">Loading…</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ───────────────────────────────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container site-footer__inner">
+      <p class="site-footer__copy">
+        &copy; <span id="js-year"></span>&nbsp;MINIVERSE &mdash; Pure HTML/CSS/JS
+      </p>
+      <nav class="site-footer__links" aria-label="Footer">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data/games.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

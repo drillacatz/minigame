@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#07071a"/>
+      <stop offset="100%" stop-color="#0d0a22"/>
+    </linearGradient>
+    <!-- Glow filters -->
+    <filter id="glow-cyan" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-cell" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-text" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Grid fade mask -->
+    <radialGradient id="fade-mask" cx="50%" cy="50%" r="55%">
+      <stop offset="50%"  stop-color="white" stop-opacity="1"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0.2"/>
+    </radialGradient>
+    <mask id="grid-mask">
+      <rect width="300" height="400" fill="url(#fade-mask)"/>
+    </mask>
+  </defs>
+
+  <!-- ── Background ──────────────────────────────── -->
+  <rect width="300" height="400" fill="url(#bg-grad)"/>
+
+  <!-- Subtle grid lines -->
+  <g opacity="0.06" stroke="#00d4ff" stroke-width="0.5">
+    <line x1="0"   y1="50"  x2="300" y2="50"/>
+    <line x1="0"   y1="100" x2="300" y2="100"/>
+    <line x1="0"   y1="150" x2="300" y2="150"/>
+    <line x1="0"   y1="200" x2="300" y2="200"/>
+    <line x1="0"   y1="250" x2="300" y2="250"/>
+    <line x1="0"   y1="300" x2="300" y2="300"/>
+    <line x1="0"   y1="350" x2="300" y2="350"/>
+    <line x1="50"  y1="0"   x2="50"  y2="400"/>
+    <line x1="100" y1="0"   x2="100" y2="400"/>
+    <line x1="150" y1="0"   x2="150" y2="400"/>
+    <line x1="200" y1="0"   x2="200" y2="400"/>
+    <line x1="250" y1="0"   x2="250" y2="400"/>
+  </g>
+
+  <!-- ── Game grid (3x3, centred) ─────────────────── -->
+  <!-- Cell size: 68px, gap: 8px, total: 3*68+2*8 = 220, offset: (300-220)/2 = 40 -->
+  <!-- Vertical centre: start at 90, total: 220, end at 310 -->
+  <g mask="url(#grid-mask)">
+    <!-- Row 1 -->
+    <!-- Cell (0,0) -->
+    <rect x="40"  y="90"  width="68" height="68" rx="5" fill="#0c0c1e" stroke="#1e1e42" stroke-width="1"/>
+    <text x="74"  y="133" text-anchor="middle" font-size="28" fill="rgba(226,226,242,0.55)" font-family="system-ui">↑</text>
+
+    <!-- Cell (0,1) — ACTIVE/highlighted -->
+    <rect x="116" y="90"  width="68" height="68" rx="5" fill="rgba(0,212,255,0.1)" stroke="#00d4ff" stroke-width="1.5" filter="url(#glow-cell)"/>
+    <text x="150" y="133" text-anchor="middle" font-size="28" fill="#00d4ff" font-family="system-ui" filter="url(#glow-cyan)">→</text>
+
+    <!-- Cell (0,2) -->
+    <rect x="192" y="90"  width="68" height="68" rx="5" fill="#0c0c1e" stroke="#1e1e42" stroke-width="1"/>
+    <text x="226" y="133" text-anchor="middle" font-size="28" fill="rgba(226,226,242,0.55)" font-family="system-ui">↓</text>
+
+    <!-- Row 2 -->
+    <!-- Cell (1,0) — DONE (green) -->
+    <rect x="40"  y="166" width="68" height="68" rx="5" fill="rgba(10,255,157,0.08)" stroke="rgba(10,255,157,0.35)" stroke-width="1"/>
+    <text x="74"  y="209" text-anchor="middle" font-size="22" fill="#0aff9d" font-family="system-ui" opacity="0.7">✓</text>
+
+    <!-- Cell (1,1) — DONE -->
+    <rect x="116" y="166" width="68" height="68" rx="5" fill="rgba(10,255,157,0.08)" stroke="rgba(10,255,157,0.35)" stroke-width="1"/>
+    <text x="150" y="209" text-anchor="middle" font-size="22" fill="#0aff9d" font-family="system-ui" opacity="0.7">✓</text>
+
+    <!-- Cell (1,2) -->
+    <rect x="192" y="166" width="68" height="68" rx="5" fill="#0c0c1e" stroke="#1e1e42" stroke-width="1"/>
+    <text x="226" y="209" text-anchor="middle" font-size="28" fill="rgba(226,226,242,0.55)" font-family="system-ui">←</text>
+
+    <!-- Row 3 -->
+    <!-- Cell (2,0) -->
+    <rect x="40"  y="242" width="68" height="68" rx="5" fill="#0c0c1e" stroke="#1e1e42" stroke-width="1"/>
+    <text x="74"  y="285" text-anchor="middle" font-size="28" fill="rgba(226,226,242,0.55)" font-family="system-ui">↓</text>
+
+    <!-- Cell (2,1) -->
+    <rect x="116" y="242" width="68" height="68" rx="5" fill="#0c0c1e" stroke="#1e1e42" stroke-width="1"/>
+    <text x="150" y="285" text-anchor="middle" font-size="28" fill="rgba(226,226,242,0.55)" font-family="system-ui">↑</text>
+
+    <!-- Cell (2,2) -->
+    <rect x="192" y="242" width="68" height="68" rx="5" fill="#0c0c1e" stroke="#1e1e42" stroke-width="1"/>
+    <text x="226" y="285" text-anchor="middle" font-size="28" fill="rgba(226,226,242,0.55)" font-family="system-ui">→</text>
+  </g>
+
+  <!-- ── Timer bar mock (top) ──────────────────────── -->
+  <rect x="40" y="62" width="220" height="5" rx="2.5" fill="rgba(255,255,255,0.07)"/>
+  <rect x="40" y="62" width="140" height="5" rx="2.5" fill="#ffd700"/>
+
+  <!-- ── Bottom gradient scrim ─────────────────────── -->
+  <defs>
+    <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#07071a" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#07071a" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="295" width="300" height="105" fill="url(#scrim)"/>
+
+  <!-- ── HUD corner accents ────────────────────────── -->
+  <!-- top-left -->
+  <polyline points="12,12 12,30 30,30" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.7"/>
+  <!-- top-right -->
+  <polyline points="288,12 288,30 270,30" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.7"/>
+  <!-- bottom-left -->
+  <polyline points="12,388 12,370 30,370" fill="none" stroke="#ff2d8b" stroke-width="1.5" opacity="0.5"/>
+  <!-- bottom-right -->
+  <polyline points="288,388 288,370 270,370" fill="none" stroke="#ff2d8b" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- ── Title text ─────────────────────────────────── -->
+  <text x="150" y="356"
+    text-anchor="middle"
+    font-family="'Orbitron','Courier New',monospace"
+    font-weight="900"
+    font-size="18"
+    fill="#ffffff"
+    letter-spacing="3"
+    filter="url(#glow-text)">DIRECTION DASH</text>
+
+  <text x="150" y="375"
+    text-anchor="middle"
+    font-family="'Orbitron','Courier New',monospace"
+    font-weight="400"
+    font-size="8.5"
+    fill="#00d4ff"
+    letter-spacing="5"
+    opacity="0.8">STELLAR IMPULSE</text>
+</svg>
