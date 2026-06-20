@@ -17,7 +17,7 @@
 </head>
 <body>
 
-  <!-- ── SITE HEADER ─────────────────────────────────────────── -->
+  <!-- SITE HEADER -->
   <header class="site-header" role="banner">
     <div class="container site-header__inner">
       <a href="index.html" class="site-logo" aria-label="Miniverse home">
@@ -25,14 +25,13 @@
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="#games" class="site-nav__link">GAMES</a>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="site-nav__link site-nav__link--ghost">GITHUB</a>
+        <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer" class="site-nav__link site-nav__link--ghost">GITHUB</a>
       </nav>
     </div>
-    <!-- scan-line decoration -->
     <div class="site-header__scan" aria-hidden="true"></div>
   </header>
 
-  <!-- ── MAIN ─────────────────────────────────────────────────── -->
+  <!-- MAIN -->
   <main class="site-main" role="main">
 
     <!-- HERO -->
@@ -41,7 +40,7 @@
         <p class="hero__eyebrow">// WELCOME TO</p>
         <h1 class="hero__title" id="hero-title">MINIVERSE</h1>
         <p class="hero__sub">A growing collection of browser mini-games.<br>No downloads. No installs. Just play.</p>
-        <a href="#games" class="hero__cta">EXPLORE GAMES ↓</a>
+        <a href="#games" class="hero__cta">EXPLORE GAMES &darr;</a>
       </div>
       <div class="hero__grid-deco" aria-hidden="true">
         <div class="hero__grid-line"></div>
@@ -57,29 +56,153 @@
           <p class="section-header__eyebrow">// GAME LIBRARY</p>
           <h2 class="section-header__title" id="games-title">SELECT GAME</h2>
         </header>
-        <!-- Cards injected by main.js; role=list is announced by screen readers -->
         <div class="games-grid" id="js-games-grid" role="list" aria-label="Available games">
-          <div class="games-grid__placeholder">Loading…</div>
+          <!-- Populated by the inline script below -->
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ── FOOTER ───────────────────────────────────────────────── -->
+  <!-- FOOTER -->
   <footer class="site-footer" role="contentinfo">
     <div class="container site-footer__inner">
       <p class="site-footer__copy">
-        &copy; <span id="js-year"></span>&nbsp;MINIVERSE &mdash; Pure HTML/CSS/JS
+        &copy; <span id="js-year"></span>&nbsp;MINIVERSE &mdash; Pure HTML / CSS / JS
       </p>
       <nav class="site-footer__links" aria-label="Footer">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer">GitHub &nearr;</a>
       </nav>
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="js/data/games.js"></script>
-  <script src="js/main.js"></script>
+  <!-- ============================================================
+       GAME REGISTRY + RENDERER  (all inline — zero external deps)
+       To add a new game: copy one object inside GAMES and edit it.
+       ============================================================ -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ----------------------------------------------------------
+       GAMES LIST — edit this to add / remove game cards
+       ---------------------------------------------------------- */
+    var GAMES = [
+      {
+        title:     'Direction Dash',
+        subtitle:  'Stellar Impulse',
+        thumbnail: 'assets/images/direction-dash.svg',
+        url:       'games/direction-dash/index.html',
+        accent:    '#00d4ff',
+        locked:    false
+      },
+      {
+        title:     'Coming Soon',
+        subtitle:  '???',
+        thumbnail: 'assets/images/coming-soon.svg',
+        url:       null,
+        accent:    '#ff2d8b',
+        locked:    true
+      },
+      {
+        title:     'Coming Soon',
+        subtitle:  '???',
+        thumbnail: 'assets/images/coming-soon.svg',
+        url:       null,
+        accent:    '#9d4eff',
+        locked:    true
+      }
+    ];
+
+    /* ----------------------------------------------------------
+       HTML escaping helper
+       ---------------------------------------------------------- */
+    function esc(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* ----------------------------------------------------------
+       Build one card element
+       ---------------------------------------------------------- */
+    function buildCard(game) {
+      var isPlayable = !game.locked && !!game.url;
+      var tag  = isPlayable ? 'a' : 'div';
+      var card = document.createElement(tag);
+
+      card.className = 'game-card' + (game.locked ? ' game-card--locked' : '');
+      card.setAttribute('role', 'listitem');
+
+      if (isPlayable) {
+        card.href = game.url;
+        card.setAttribute('aria-label', 'Play ' + game.title);
+      }
+
+      if (game.accent) {
+        card.style.setProperty('--card-accent', game.accent);
+      }
+
+      var lockedBadge = game.locked
+        ? '<div class="game-card__locked-badge">COMING SOON</div>'
+        : '';
+
+      card.innerHTML =
+        '<img' +
+          ' class="game-card__img"' +
+          ' src="' + esc(game.thumbnail) + '"' +
+          ' alt="' + esc(game.title) + '"' +
+          ' loading="lazy"' +
+          ' onerror="this.src=\'assets/images/coming-soon.svg\'"' +
+        '>' +
+        '<div class="game-card__banner">' +
+          '<p class="game-card__title">' + esc(game.title)    + '</p>' +
+          '<p class="game-card__sub">'   + esc(game.subtitle) + '</p>' +
+        '</div>' +
+        lockedBadge;
+
+      return card;
+    }
+
+    /* ----------------------------------------------------------
+       Render cards into the grid
+       ---------------------------------------------------------- */
+    function render() {
+      var grid = document.getElementById('js-games-grid');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+
+      if (!GAMES || GAMES.length === 0) {
+        grid.innerHTML = '<p class="games-grid__placeholder">No games yet — check back soon!</p>';
+        return;
+      }
+
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < GAMES.length; i++) {
+        frag.appendChild(buildCard(GAMES[i]));
+      }
+      grid.appendChild(frag);
+
+      /* Year in footer */
+      var yr = document.getElementById('js-year');
+      if (yr) yr.textContent = new Date().getFullYear();
+    }
+
+    /* ----------------------------------------------------------
+       Run after DOM is ready
+       ---------------------------------------------------------- */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', render);
+    } else {
+      render();
+    }
+
+  }());
+  </script>
+
 </body>
 </html>
