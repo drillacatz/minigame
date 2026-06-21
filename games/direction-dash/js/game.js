@@ -23,18 +23,28 @@
       this._diffKey = params.get('difficulty') || 'ezpz';
       if (!DD.CONFIG.DIFFICULTIES[this._diffKey]) this._diffKey = 'ezpz';
       this._bindPermanentUI();
-      this._openMenu();
+
+      // When launched from the homepage quick-launch modal (?difficulty=xxx),
+      // skip the pause menu entirely and start the countdown immediately.
+      if (params.get('difficulty')) {
+        this._setupGame();
+      } else {
+        this._openMenu();
+      }
     }
 
     /* ================================================================
-       Paused start menu — difficulty select + ranking + START GAME.
-       Shown on first load, and again via "MAIN MENU" after a round.
+       Pause / difficulty menu — shown on direct navigation (no URL param)
+       and again when the player clicks "CHANGE DIFFICULTY" after a round.
        ================================================================ */
     _openMenu() {
       this._timer?.stop();
       this._timer = null;
       this._input?.deactivate();
       DD.Renderer.hideResult();
+      // BUG FIX: countdown overlay starts visible in HTML (no `hidden` class);
+      // without this call it would sit on top of the menu and swallow all clicks.
+      DD.Renderer.hideCountdown();
       DD.Renderer.setMenuSelection(this._diffKey);
       DD.Renderer.renderRanking(this._loadRanking());
       DD.Renderer.showMenu();

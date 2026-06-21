@@ -293,6 +293,158 @@
 
 .site-footer__links a:hover { color: var(--clr-cyan); }
 
+/* ── Quick-launch modal (homepage) ─────────────────────────────── */
+/* Triggered when a game card is clicked; lets the player pick
+   difficulty and shows per-diff best scores before navigating. */
+.launch-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;   /* above sticky header (100) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+.launch-modal.hidden { display: none; }
+
+.launch-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 15, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.launch-modal__box {
+  position: relative;
+  z-index: 1;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-8) var(--sp-8) var(--sp-8);
+  width: min(92%, 460px);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.85);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.launch-modal__close {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--clr-border);
+  border-radius: 50%;
+  color: var(--clr-text-dim);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.launch-modal__close:hover { color: var(--clr-cyan); border-color: var(--clr-cyan); }
+
+.launch-modal__header { text-align: center; }
+
+.launch-modal__title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wide);
+  color: var(--clr-text);
+  margin-bottom: var(--sp-2);
+}
+.launch-modal__tip {
+  font-size: var(--text-sm);
+  color: var(--clr-text-dim);
+  line-height: 1.6;
+}
+
+.launch-modal__prompt {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--clr-cyan);
+  text-align: center;
+}
+
+/* ── Difficulty option links inside the modal ────────────────────── */
+.launch-modal__diffs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+
+.ldiff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-5) var(--sp-3) var(--sp-4);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--r-md);
+  background: rgba(255,255,255,0.02);
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: transform var(--t-base), border-color var(--t-base),
+              box-shadow var(--t-base), background var(--t-base);
+}
+.ldiff:hover { transform: translateY(-3px); }
+
+/* Per-difficulty glow on hover */
+.ldiff[data-diff="ezpz"]:hover {
+  border-color: #00d4ff;
+  background: rgba(0,212,255,0.09);
+  box-shadow: 0 0 18px rgba(0,212,255,0.30);
+}
+.ldiff[data-diff="whatever"]:hover {
+  border-color: #9d4eff;
+  background: rgba(157,78,255,0.09);
+  box-shadow: 0 0 18px rgba(157,78,255,0.30);
+}
+.ldiff[data-diff="master"]:hover {
+  border-color: #ff2d8b;
+  background: rgba(255,45,139,0.09);
+  box-shadow: 0 0 18px rgba(255,45,139,0.30);
+}
+
+.ldiff__name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-black);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+.ldiff__meta {
+  font-size: var(--text-xs);
+  color: var(--clr-text-dim);
+  letter-spacing: 0.02em;
+}
+.ldiff__score {
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--clr-text-dim);
+  margin-top: var(--sp-2);
+  min-height: 1.2em;  /* keep rows aligned when score is absent */
+}
+.ldiff__score-val   { color: var(--clr-gold); font-size: 0.72rem; }
+.ldiff__score-empty { color: var(--clr-border); }
+
+body.modal-open { overflow: hidden; }
+
+@media (max-width: 380px) {
+  .launch-modal__diffs { grid-template-columns: 1fr; gap: var(--sp-2); }
+  .ldiff { flex-direction: row; justify-content: space-between; padding: var(--sp-3) var(--sp-4); }
+}
+
 /* ── GitHub icon nav link ───────────────────────────────────────── */
 .site-nav__github {
   display: flex;

@@ -24,7 +24,7 @@
         <span class="site-logo__bracket">[</span>MINI<span class="site-logo__accent">VERSE</span><span class="site-logo__bracket">]</span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
-        <!-- Mute / unmute toggle — also controls SFX on every game page -->
+        <!-- Mute / unmute toggle -->
         <button type="button" class="site-nav__sound" id="js-sound-toggle" aria-label="Mute sound" aria-pressed="false">
           <svg class="site-nav__sound-icon site-nav__sound-icon--on" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.32v8.64c1.23-1.03 2-2.55 2-4.32z" opacity=".85"/><path d="M14.5 4.97v2.06c2.89.86 5 3.54 5 6.97s-2.11 6.11-5 6.97v2.06c4.01-.91 7-4.49 7-9.03s-2.99-8.12-7-9.03z" opacity=".6"/>
@@ -33,7 +33,6 @@
             <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M19.5 7.5l-7 7M12.5 7.5l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
           </svg>
         </button>
-        <!-- GitHub icon only — no text -->
         <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer"
            class="site-nav__github" aria-label="GitHub repository" data-sfx="click">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -48,7 +47,7 @@
   <!-- MAIN -->
   <main class="site-main" role="main">
 
-    <!-- HERO — eyebrow and CTA removed -->
+    <!-- HERO -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero__inner">
         <h1 class="hero__title" id="hero-title">MINIVERSE</h1>
@@ -82,22 +81,63 @@
   </footer>
 
   <!-- ============================================================
-       GAME REGISTRY + RENDERER  (all inline — zero external deps)
-       To add a game: add an object to the GAMES array below.
+       QUICK-LAUNCH MODAL
+       Shown when a game card is clicked. Lets the player pick a
+       difficulty and shows their best score for each — one tap on
+       a difficulty card navigates straight to the game.
+       ============================================================ -->
+  <div class="launch-modal hidden" id="js-launch-modal"
+       role="dialog" aria-modal="true" aria-labelledby="js-modal-title">
+    <!-- Clicking the backdrop closes the modal -->
+    <div class="launch-modal__backdrop" id="js-modal-backdrop"></div>
+    <div class="launch-modal__box">
+      <button class="launch-modal__close" id="js-modal-close"
+              aria-label="Close" data-sfx="click">&times;</button>
+
+      <header class="launch-modal__header">
+        <h2 class="launch-modal__title" id="js-modal-title"></h2>
+        <p  class="launch-modal__tip"   id="js-modal-tip"></p>
+      </header>
+
+      <p class="launch-modal__prompt">// TAP A DIFFICULTY TO BEGIN</p>
+
+      <!-- Difficulty cards injected by JS -->
+      <div class="launch-modal__diffs" id="js-modal-diffs"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       GAME REGISTRY + RENDERER + QUICK-LAUNCH MODAL LOGIC
        ============================================================ -->
   <script>
   (function () {
     'use strict';
 
-    /* ── GAMES LIST ─ edit here to add / remove cards ─────── */
+    /* ── GAME DATA ─────────────────────────────────────────────────
+       Each entry describes one game card.
+       `difficulties` — array of { key, label, meta, color }
+         When present, clicking the card opens the quick-launch modal
+         (difficulty picker) instead of navigating directly.
+         The chosen difficulty is passed as ?difficulty=<key> so
+         game.html can auto-start without showing its own pause menu.
+       `lsKey` — localStorage key used by that game to store scores,
+         read here to display per-difficulty best scores in the modal.
+    ─────────────────────────────────────────────────────────────── */
     var GAMES = [
       {
-        title:     'Direction Dash',
-        subtitle:  '',          /* subtitle removed per user request */
-        thumbnail: 'assets/images/direction-dash.svg',
-        url:       'games/direction-dash/game.html',
-        accent:    '#00d4ff',
-        locked:    false
+        title:       'Direction Dash',
+        subtitle:    '',
+        thumbnail:   'assets/images/direction-dash.svg',
+        url:         'games/direction-dash/game.html',
+        accent:      '#00d4ff',
+        locked:      false,
+        tip:         'Match each glowing arrow before time runs out. Wrong move \u2212\u20091 second.',
+        lsKey:       'miniverse_dd_scores_v1',
+        difficulties: [
+          { key: 'ezpz',     label: 'EZPZ',     meta: '3\u00d73 \u00b7 9s', color: '#00d4ff' },
+          { key: 'whatever', label: 'WHATEVER',  meta: '4\u00d74 \u00b7 9s', color: '#9d4eff' },
+          { key: 'master',   label: 'MASTER',    meta: '5\u00d75 \u00b7 9s', color: '#ff2d8b' }
+        ]
       },
       {
         title:     'Coming Soon',
@@ -117,21 +157,50 @@
       }
     ];
 
+    /* ── Helpers ─────────────────────────────────────────────────── */
     function esc(str) {
       if (!str) return '';
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    function loadScores(lsKey) {
+      try {
+        var raw = lsKey ? localStorage.getItem(lsKey) : null;
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) { return {}; }
+    }
+
+    /* ── Card builder ────────────────────────────────────────────── */
     function buildCard(game) {
       var isPlayable = !game.locked && !!game.url;
-      var el = document.createElement(isPlayable ? 'a' : 'div');
+      var hasDiffs   = isPlayable && Array.isArray(game.difficulties) && game.difficulties.length > 0;
+
+      // Games with difficulty selection use a <div> that opens the modal.
+      // Simple (difficulty-less) games use a plain <a> link.
+      var tag = (isPlayable && !hasDiffs) ? 'a' : 'div';
+      var el  = document.createElement(tag);
       el.className = 'game-card' + (game.locked ? ' game-card--locked' : '');
       el.setAttribute('role', 'listitem');
+
       if (isPlayable) {
-        el.href = game.url;
-        el.setAttribute('aria-label', 'Play ' + game.title);
-        el.setAttribute('data-sfx', 'click'); // plays click.wav via audio.js delegation
+        el.setAttribute('data-sfx', 'click');
+        if (hasDiffs) {
+          el.setAttribute('tabindex', '0');
+          el.setAttribute('aria-label', 'Select difficulty for ' + game.title);
+          el.style.cursor = 'pointer';
+          // Store game ref so the listener can close over it cleanly
+          (function (g) {
+            el.addEventListener('click', function () { openModal(g); });
+            el.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(g); }
+            });
+          }(game));
+        } else {
+          el.href = game.url;
+          el.setAttribute('aria-label', 'Play ' + game.title);
+        }
       }
+
       if (game.accent) el.style.setProperty('--card-accent', game.accent);
 
       el.innerHTML =
@@ -142,9 +211,73 @@
           (game.subtitle ? '<p class="game-card__sub">' + esc(game.subtitle) + '</p>' : '') +
         '</div>' +
         (game.locked ? '<div class="game-card__locked-badge">COMING SOON</div>' : '');
+
       return el;
     }
 
+    /* ── Quick-launch modal ──────────────────────────────────────── */
+    function openModal(game) {
+      var modal = document.getElementById('js-launch-modal');
+      if (!modal) return;
+
+      // Title + tip
+      document.getElementById('js-modal-title').textContent = game.title;
+      document.getElementById('js-modal-tip').textContent   = game.tip || '';
+
+      // Best scores from localStorage
+      var scores = loadScores(game.lsKey);
+
+      // Build difficulty cards (each is an <a> that navigates on click)
+      var diffsEl = document.getElementById('js-modal-diffs');
+      diffsEl.innerHTML = (game.difficulties || []).map(function (diff) {
+        var entry     = scores[diff.key];
+        var score     = (entry && typeof entry.score === 'number') ? entry.score : null;
+        var scoreHtml = score !== null
+          ? 'BEST&nbsp;<span class="ldiff__score-val">' + score + '</span>'
+          : '<span class="ldiff__score-empty">\u2014</span>';
+
+        return '<a class="ldiff"' +
+          ' href="' + esc(game.url) + '?difficulty=' + esc(diff.key) + '"' +
+          ' data-diff="' + esc(diff.key) + '"' +
+          ' data-sfx="click"' +
+          ' aria-label="Play ' + esc(game.title) + ' on ' + esc(diff.label) + '">' +
+          '<span class="ldiff__name" style="color:' + esc(diff.color) + '">' + esc(diff.label) + '</span>' +
+          '<span class="ldiff__meta">' + esc(diff.meta) + '</span>' +
+          '<span class="ldiff__score">' + scoreHtml + '</span>' +
+        '</a>';
+      }).join('');
+
+      modal.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+
+      // Keyboard accessibility: focus the close button
+      setTimeout(function () {
+        var closeBtn = document.getElementById('js-modal-close');
+        if (closeBtn) closeBtn.focus();
+      }, 60);
+    }
+
+    function closeModal() {
+      var modal = document.getElementById('js-launch-modal');
+      if (!modal || modal.classList.contains('hidden')) return;
+      modal.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+    }
+
+    /* ── Modal event wiring ─────────────────────────────────────── */
+    function bindModal() {
+      document.getElementById('js-modal-backdrop')
+        .addEventListener('click', closeModal);
+
+      document.getElementById('js-modal-close')
+        .addEventListener('click', closeModal);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
+      });
+    }
+
+    /* ── Render cards ───────────────────────────────────────────── */
     function render() {
       var grid = document.getElementById('js-games-grid');
       if (!grid) return;
@@ -156,6 +289,7 @@
       var frag = document.createDocumentFragment();
       for (var i = 0; i < GAMES.length; i++) frag.appendChild(buildCard(GAMES[i]));
       grid.appendChild(frag);
+      bindModal();
     }
 
     if (document.readyState === 'loading') {
