@@ -292,3 +292,26 @@
 }
 
 .site-footer__links a:hover { color: var(--clr-cyan); }
+
+/* ── GitHub icon nav link ───────────────────────────────────────── */
+.site-nav__github {
+  display: flex;
+  align-items: center;
+  color: var(--clr-text-dim);
+  transition: color var(--t-fast);
+}
+.site-nav__github:hover { color: var(--clr-cyan); }
+
+/* ── Sound mute/unmute toggle ─────────────────────────────────────── */
+.site-nav__sound {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--clr-text-dim);
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+.site-nav__sound:hover { color: var(--clr-cyan); }
+.site-nav__sound[aria-pressed="true"] { color: var(--clr-pink); }

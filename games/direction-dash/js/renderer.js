@@ -1,52 +1,75 @@
 /* =====================================================================
    js/renderer.js  —  Direction Dash DOM renderer
-   Owns all read/write of DOM. Game logic must NOT touch the DOM directly.
-   Depends on: config.js
+   All DOM mutations live here. No game logic.
    ===================================================================== */
 
 (function (DD) {
   'use strict';
 
-  /* ── Private element cache ───────────────────────────────────── */
-  let _el = {};
+  /* ── SVG icon strings for input mode button ─────────────────── */
+  var MODE_ICONS = {
+    keyboard: /* keyboard */ [
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+      '<rect x="2" y="6" width="20" height="12" rx="2"/>',
+      '<path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M10 14h4"/>',
+      '</svg>'
+    ].join(''),
+    buttons: /* d-pad */ [
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+      '<rect x="9" y="9" width="6" height="6" rx="1"/>',
+      '<path d="M12 6v3M12 15v3M6 12h3M15 12h3"/>',
+      '</svg>'
+    ].join(''),
+    swipe: /* hand swipe */ [
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M18 11V6a2 2 0 0 0-4 0v1"/>',
+      '<path d="M14 5V4a2 2 0 0 0-4 0v3"/>',
+      '<path d="M10 5.5V3a2 2 0 0 0-4 0v5"/>',
+      '<path d="M6 8v4l-1.5 1.5A2 2 0 0 0 6 17l1 1 4 1h4a4 4 0 0 0 4-4V9"/>',
+      '</svg>'
+    ].join(''),
+  };
 
-  /* ── Initialise ──────────────────────────────────────────────── */
+  /* ── DOM element cache ───────────────────────────────────────── */
+  var _el = {};
+
   function init() {
     _el = {
-      timerFill:     document.getElementById('js-timer-fill'),
-      timerLabel:    document.getElementById('js-timer-label'),
-      diffLabel:     document.getElementById('js-diff-label'),
-      progress:      document.getElementById('js-progress'),
-      errors:        document.getElementById('js-errors'),
-      grid:          document.getElementById('js-grid'),
-      countdown:     document.getElementById('js-countdown'),
-      countdownNum:  document.getElementById('js-countdown-num'),
-      result:        document.getElementById('js-result'),
-      resultTitle:   document.getElementById('js-result-title'),
-      resultStats:   document.getElementById('js-result-stats'),
-      dpad:          document.getElementById('js-dpad'),
-      kbHint:        document.getElementById('js-kb-hint'),
-      swipeHint:     document.getElementById('js-swipe-hint'),
-      modeBtn:       document.getElementById('js-mode-toggle'),
+      timerFill:    document.getElementById('js-timer-fill'),
+      timerLabel:   document.getElementById('js-timer-label'),
+      diffLabel:    document.getElementById('js-diff-label'),
+      progress:     document.getElementById('js-progress'),
+      errors:       document.getElementById('js-errors'),
+      grid:         document.getElementById('js-grid'),
+      countdown:    document.getElementById('js-countdown'),
+      countdownNum: document.getElementById('js-countdown-num'),
+      result:       document.getElementById('js-result'),
+      resultTitle:  document.getElementById('js-result-title'),
+      resultStats:  document.getElementById('js-result-stats'),
+      dpad:         document.getElementById('js-dpad'),
+      kbHint:       document.getElementById('js-kb-hint'),
+      swipeHint:    document.getElementById('js-swipe-hint'),
+      modeBtn:      document.getElementById('js-mode-toggle'),
+      modeIcon:     document.getElementById('js-mode-icon'),
+      modeLabel:    document.getElementById('js-mode-label'),
     };
   }
 
   /* ── Grid ────────────────────────────────────────────────────── */
-
-  /** Build the CSS grid and populate it with hidden cells. */
   function buildGrid(gridSize, totalCells) {
     _el.grid.innerHTML = '';
     _el.grid.style.setProperty('--grid-cols', gridSize);
-
-    const frag = document.createDocumentFragment();
-    for (let i = 0; i < totalCells; i++) {
-      const cell   = document.createElement('div');
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < totalCells; i++) {
+      var cell = document.createElement('div');
       cell.className = 'cell cell--hidden';
       cell.setAttribute('data-index', i);
       cell.setAttribute('role', 'gridcell');
-      cell.setAttribute('aria-label', 'hidden');
-
-      const sym  = document.createElement('span');
+      var sym = document.createElement('span');
       sym.className = 'cell__symbol';
       sym.textContent = '?';
       cell.appendChild(sym);
@@ -55,143 +78,116 @@
     _el.grid.appendChild(frag);
   }
 
-  /** @returns {HTMLElement|null} */
   function _getCell(index) {
-    return _el.grid.querySelector(`[data-index="${index}"]`);
+    return _el.grid.querySelector('[data-index="' + index + '"]');
   }
 
-  /**
-   * Reveal a single cell — show its direction symbol.
-   * Each cell gets a tiny staggered delay for a cascade effect.
-   */
   function revealCell(index, direction) {
-    const cell = _getCell(index);
+    var cell = _getCell(index);
     if (!cell) return;
-
-    const sym = DD.CONFIG.DIR_SYMBOLS[direction] || '?';
+    var sym = DD.CONFIG.DIR_SYMBOLS[direction] || '?';
     cell.querySelector('.cell__symbol').textContent = sym;
     cell.className = 'cell cell--revealed';
-    cell.setAttribute('aria-label', direction);
     cell.setAttribute('data-dir', direction);
   }
 
-  /** Reveal all cells in sequence with a stagger. Calls onDone when last reveals. */
   function revealAll(grid, onDone) {
-    const staggerMs = Math.min(20, 400 / grid.length); // tighter stagger for large grids
-    grid.forEach((dir, i) => {
-      setTimeout(() => {
-        revealCell(i, dir);
-        if (i === grid.length - 1 && typeof onDone === 'function') {
-          // Give the last animation (~250ms) a moment before callback
-          setTimeout(onDone, 260);
-        }
-      }, i * staggerMs);
-    });
-  }
-
-  /** Highlight the active cell; remove highlight from others. */
-  function setActiveCell(index) {
-    _el.grid.querySelectorAll('.cell--active').forEach(c => {
-      c.classList.remove('cell--active');
-    });
-    const cell = _getCell(index);
-    if (cell) {
-      cell.classList.add('cell--active');
-      cell.setAttribute('aria-selected', 'true');
+    var staggerMs = Math.min(20, 400 / grid.length);
+    for (var i = 0; i < grid.length; i++) {
+      (function(idx, dir) {
+        setTimeout(function() {
+          revealCell(idx, dir);
+          if (idx === grid.length - 1 && typeof onDone === 'function') {
+            setTimeout(onDone, 260);
+          }
+        }, idx * staggerMs);
+      })(i, grid[i]);
     }
   }
 
-  /**
-   * Flash a cell with a transient animation class.
-   * @param {number} index
-   * @param {'correct'|'wrong'} type
-   */
-  function flashCell(index, type) {
-    const cell = _getCell(index);
-    if (!cell) return;
-
-    const cls = type === 'correct' ? 'cell--flash-correct' : 'cell--flash-wrong';
-    cell.classList.add(cls);
-
-    const onEnd = () => {
-      cell.classList.remove(cls);
-      cell.removeEventListener('animationend', onEnd);
-    };
-    cell.addEventListener('animationend', onEnd, { once: true });
+  function setActiveCell(index) {
+    var prev = _el.grid.querySelector('.cell--active');
+    if (prev) prev.classList.remove('cell--active');
+    var cell = _getCell(index);
+    if (cell) cell.classList.add('cell--active');
   }
 
-  /** Mark a cell as done (correct, no longer active). */
+  function flashCell(index, type) {
+    var cell = _getCell(index);
+    if (!cell) return;
+    var cls = type === 'correct' ? 'cell--flash-correct' : 'cell--flash-wrong';
+    cell.classList.add(cls);
+    cell.addEventListener('animationend', function handler() {
+      cell.classList.remove(cls);
+      cell.removeEventListener('animationend', handler);
+    });
+  }
+
   function markCellDone(index) {
-    const cell = _getCell(index);
+    var cell = _getCell(index);
     if (!cell) return;
     cell.classList.remove('cell--active', 'cell--flash-correct');
     cell.classList.add('cell--done');
     cell.querySelector('.cell__symbol').textContent = '✓';
-    cell.setAttribute('aria-label', 'correct');
-    cell.removeAttribute('aria-selected');
   }
 
   /* ── Timer ───────────────────────────────────────────────────── */
-
-  /**
-   * @param {number} remaining  seconds left
-   * @param {number} fraction   remaining / total (0–1)
-   */
   function updateTimer(remaining, fraction) {
     if (!_el.timerFill) return;
-
-    // Width
-    const pct = Math.max(0, Math.min(100, fraction * 100));
-    _el.timerFill.style.width = `${pct}%`;
-
-    // Colour class
-    const C = DD.CONFIG;
+    _el.timerFill.style.width = Math.max(0, Math.min(100, fraction * 100)) + '%';
     _el.timerFill.classList.remove('timer--mid', 'timer--low');
-    if (fraction <= C.TIMER_LOW_FRAC) {
+    if (fraction <= DD.CONFIG.TIMER_LOW_FRAC) {
       _el.timerFill.classList.add('timer--low');
-    } else if (fraction <= C.TIMER_MID_FRAC) {
+    } else if (fraction <= DD.CONFIG.TIMER_MID_FRAC) {
       _el.timerFill.classList.add('timer--mid');
     }
-
-    // Numeric label
     if (_el.timerLabel) {
       _el.timerLabel.textContent = remaining.toFixed(1);
-      _el.timerLabel.style.color = fraction <= C.TIMER_LOW_FRAC ? '#ff3f3f'
-                                 : fraction <= C.TIMER_MID_FRAC ? '#ffd700'
-                                 : '#00d4ff';
+      _el.timerLabel.style.color =
+        fraction <= DD.CONFIG.TIMER_LOW_FRAC ? '#ff3f3f' :
+        fraction <= DD.CONFIG.TIMER_MID_FRAC ? '#ffd700' : '#00d4ff';
     }
   }
 
-  /* ── HUD stats ───────────────────────────────────────────────── */
+  /* ── HUD ─────────────────────────────────────────────────────── */
+  function setDiffLabel(label) { if (_el.diffLabel) _el.diffLabel.textContent = label; }
 
-  function setDiffLabel(label) {
-    if (_el.diffLabel) _el.diffLabel.textContent = label;
-  }
-
-  function updateStats(currentIndex, totalCells, wrongCount) {
-    if (_el.progress) _el.progress.textContent = `${currentIndex}/${totalCells}`;
-    if (_el.errors)   _el.errors.textContent   = wrongCount;
+  function updateStats(cur, total, wrong) {
+    if (_el.progress) _el.progress.textContent = cur + '/' + total;
+    if (_el.errors)   _el.errors.textContent   = wrong;
   }
 
   /* ── Countdown overlay ───────────────────────────────────────── */
-
-  /**
-   * Show the countdown overlay with the given text, then call onDone.
-   * The animation is driven by CSS; JS just swaps the text and waits.
-   */
   function showCountdownStep(text, onDone) {
-    if (!_el.countdown) { onDone?.(); return; }
-
-    _el.countdown.classList.remove('hidden');
+    if (!_el.countdown) { onDone && onDone(); return; }
+    _el.countdown.classList.remove('hidden', 'overlay--transparent');
     _el.countdownNum.textContent = text;
-
-    // Restart animation by cloning
-    const old = _el.countdownNum;
-    const clone = old.cloneNode(true);
+    /* Restart CSS animation by cloning the element */
+    var old = _el.countdownNum;
+    var clone = old.cloneNode(true);
     old.parentNode.replaceChild(clone, old);
     _el.countdownNum = clone;
+    setTimeout(function() { onDone && onDone(); }, DD.CONFIG.COUNTDOWN_STEP_MS);
+  }
 
-    setTimeout(() => { onDone?.(); }, DD.CONFIG.COUNTDOWN_STEP_MS);
+  /**
+   * Show "GO!" over a semi-transparent overlay so the grid remains visible.
+   * The player can see the arrows while GO! flashes.
+   */
+  function showGoFlash(onDone) {
+    if (!_el.countdown) { onDone && onDone(); return; }
+    _el.countdown.classList.remove('hidden');
+    _el.countdown.classList.add('overlay--transparent');
+    _el.countdownNum.textContent = 'GO!';
+    var old = _el.countdownNum;
+    var clone = old.cloneNode(true);
+    old.parentNode.replaceChild(clone, old);
+    _el.countdownNum = clone;
+    setTimeout(function() {
+      _el.countdown.classList.add('hidden');
+      _el.countdown.classList.remove('overlay--transparent');
+      onDone && onDone();
+    }, DD.CONFIG.GO_SHOW_MS);
   }
 
   function hideCountdown() {
@@ -199,102 +195,63 @@
   }
 
   /* ── Result overlay ──────────────────────────────────────────── */
-
-  /**
-   * @param {boolean} win
-   * @param {{ completed, total, errors, timeRemaining, score, isHighScore }} stats
-   */
   function showResult(win, stats) {
     if (!_el.result) return;
-
-    // Title
     _el.resultTitle.textContent = win ? 'CLEARED!' : "TIME'S UP";
-    _el.resultTitle.className   = `result-title result-title--${win ? 'win' : 'lose'}`;
+    _el.resultTitle.className = 'result-title result-title--' + (win ? 'win' : 'lose');
 
-    // Stats rows
-    const rows = [
-      { label: 'PROGRESS', val: `${stats.completed} / ${stats.total}` },
+    var rows = [
+      { label: 'PROGRESS', val: stats.completed + ' / ' + stats.total },
       { label: 'ERRORS',   val: stats.errors },
     ];
     if (win) {
-      rows.push({ label: 'TIME LEFT', val: `${stats.timeRemaining.toFixed(2)}s` });
-      rows.push({ label: 'SCORE', val: stats.score, highlight: true });
+      rows.push({ label: 'TIME LEFT', val: stats.timeRemaining.toFixed(2) + 's' });
+      rows.push({ label: 'SCORE', val: stats.score, hi: true });
     }
-
-    _el.resultStats.innerHTML = rows.map(r => `
-      <div class="result-row">
-        <span class="result-row__label">${r.label}</span>
-        <span class="result-row__val${r.highlight ? ' result-row__val--score' : ''}">${r.val}</span>
-      </div>
-    `).join('') + (stats.isHighScore ? '<div class="result-highscore">★ NEW HIGH SCORE</div>' : '');
+    _el.resultStats.innerHTML = rows.map(function(r) {
+      return '<div class="result-row"><span class="result-row__label">' + r.label +
+        '</span><span class="result-row__val' + (r.hi ? ' result-row__val--score' : '') +
+        '">' + r.val + '</span></div>';
+    }).join('') + (stats.isHighScore ? '<div class="result-highscore">&#9733; NEW HIGH SCORE</div>' : '');
 
     _el.result.classList.remove('hidden');
   }
 
-  function hideResult() {
-    if (_el.result) _el.result.classList.add('hidden');
-  }
+  function hideResult() { if (_el.result) _el.result.classList.add('hidden'); }
 
-  /* ── Input mode switching ────────────────────────────────────── */
-
-  /**
-   * Show/hide the correct control widget for the given mode.
-   * @param {'keyboard'|'buttons'|'swipe'} mode
-   */
+  /* ── Input mode (widgets + button icon) ──────────────────────── */
   function setInputMode(mode) {
-    const M = DD.CONFIG.MODES;
+    var M = DD.CONFIG.MODES;
+    if (_el.dpad)      _el.dpad.classList.toggle('hidden', mode !== M.BUTTONS);
+    if (_el.kbHint)    _el.kbHint.classList.toggle('hidden', mode !== M.KEYBOARD);
+    if (_el.swipeHint) _el.swipeHint.classList.toggle('hidden', mode !== M.SWIPE);
 
-    // D-pad
-    if (_el.dpad) {
-      _el.dpad.classList.toggle('hidden', mode !== M.BUTTONS);
-    }
-    // Keyboard hint
-    if (_el.kbHint) {
-      _el.kbHint.classList.toggle('hidden', mode !== M.KEYBOARD);
-    }
-    // Swipe hint
-    if (_el.swipeHint) {
-      _el.swipeHint.classList.toggle('hidden', mode !== M.SWIPE);
-    }
-    // Mode toggle button label
-    if (_el.modeBtn) {
-      _el.modeBtn.textContent = mode === M.SWIPE ? 'BUTTON/KEY MODE' : 'SWIPE MODE';
+    /* Update mode toggle button — icon + label reflect CURRENT mode */
+    if (_el.modeIcon)  _el.modeIcon.innerHTML  = MODE_ICONS[mode] || '';
+    if (_el.modeLabel) {
+      var labels = { keyboard: 'WASD', buttons: 'D-PAD', swipe: 'SWIPE' };
+      _el.modeLabel.textContent = labels[mode] || mode.toUpperCase();
     }
   }
 
-  /** Briefly highlight a WASD key in the keyboard hint widget. */
   function flashKey(direction) {
     if (!_el.kbHint) return;
-    const dirToKey = { up: 'W', down: 'S', left: 'A', right: 'D' };
-    const letter = dirToKey[direction];
+    var map = { up: 'W', down: 'S', left: 'A', right: 'D' };
+    var letter = map[direction];
     if (!letter) return;
-    const keyEl = _el.kbHint.querySelector(`kbd`);
-    // find the matching key element
-    _el.kbHint.querySelectorAll('kbd').forEach(k => {
+    _el.kbHint.querySelectorAll('kbd').forEach(function(k) {
       if (k.textContent.trim() === letter) {
         k.classList.add('key--active');
-        setTimeout(() => k.classList.remove('key--active'), 150);
+        setTimeout(function() { k.classList.remove('key--active'); }, 150);
       }
     });
   }
 
-  /* ── Public API ──────────────────────────────────────────────── */
   DD.Renderer = {
-    init,
-    buildGrid,
-    revealAll,
-    setActiveCell,
-    flashCell,
-    markCellDone,
-    updateTimer,
-    setDiffLabel,
-    updateStats,
-    showCountdownStep,
-    hideCountdown,
-    showResult,
-    hideResult,
-    setInputMode,
-    flashKey,
+    init, buildGrid, revealAll, setActiveCell, flashCell, markCellDone,
+    updateTimer, setDiffLabel, updateStats,
+    showCountdownStep, showGoFlash, hideCountdown,
+    showResult, hideResult, setInputMode, flashKey,
   };
 
 }(window.DD = window.DD || {}));

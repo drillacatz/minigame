@@ -12,27 +12,21 @@
 </head>
 <body>
 
-  <!-- ── Back link ────────────────────────────────────────────── -->
-  <a href="../../index.html" class="back-link" aria-label="Back to Miniverse home">
-    <span class="back-link__arrow">‹</span> MINIVERSE
+  <!-- Back link -->
+  <a href="../../index.html" class="back-link" aria-label="Back to Miniverse home" data-sfx="click">
+    <span class="back-link__arrow">&#8249;</span> MINIVERSE
   </a>
 
-  <!-- ── Main content ─────────────────────────────────────────── -->
   <main class="title-page">
 
-    <!-- Hero / game identity -->
+    <!-- Game identity — "Stellar Impulse" eyebrow removed -->
     <header class="game-identity">
-      <p class="game-identity__eyebrow">// STELLAR IMPULSE</p>
       <h1 class="game-identity__title">DIRECTION<br><span class="game-identity__title--accent">DASH</span></h1>
       <p class="game-identity__desc">
         A direction grid appears. Input every arrow before the clock hits zero.
-        <br>Each wrong move costs you one second. Survive the grid.
+        Each wrong move costs you one second. Survive the grid.
       </p>
-
-      <!-- Live high-score badges injected by JS -->
-      <div class="scores-row" id="js-scores-row" aria-label="Best scores per difficulty" aria-live="polite">
-        <!-- populated by title.js -->
-      </div>
+      <div class="scores-row" id="js-scores-row" aria-label="Best scores" aria-live="polite"></div>
     </header>
 
     <!-- Difficulty selection -->
@@ -41,64 +35,49 @@
 
       <div class="diff-cards">
 
-        <a href="game.html?difficulty=ezpz" class="diff-card diff-card--ezpz" aria-label="Play Easy mode: 3×3 grid">
+        <!-- EZPZ -->
+        <a href="game.html?difficulty=ezpz" class="diff-card diff-card--ezpz" aria-label="Easy mode: 3x3 grid" data-sfx="click">
           <div class="diff-card__hud-corner diff-card__hud-corner--tl"></div>
           <div class="diff-card__hud-corner diff-card__hud-corner--br"></div>
           <p class="diff-card__key">01</p>
           <h3 class="diff-card__name">EZPZ</h3>
           <p class="diff-card__mode">Easy Mode</p>
           <ul class="diff-card__stats">
-            <li><span class="stat-label">GRID</span><span class="stat-val">3 × 3</span></li>
+            <li><span class="stat-label">GRID</span><span class="stat-val">3 &times; 3</span></li>
             <li><span class="stat-label">TIME</span><span class="stat-val">9 sec</span></li>
             <li><span class="stat-label">CELLS</span><span class="stat-val">9</span></li>
           </ul>
-          <div class="diff-card__grid-preview" aria-hidden="true">
-            <span>↑</span><span>→</span><span>↓</span>
-            <span>←</span><span>↑</span><span>→</span>
-            <span>↓</span><span>←</span><span>↑</span>
-          </div>
-          <div class="diff-card__cta">ENTER ›</div>
+          <div class="diff-card__play-btn">PLAY</div>
         </a>
 
-        <a href="game.html?difficulty=whatever" class="diff-card diff-card--whatever" aria-label="Play Medium mode: 4×4 grid">
+        <!-- WHATEVER -->
+        <a href="game.html?difficulty=whatever" class="diff-card diff-card--whatever" aria-label="Medium mode: 4x4 grid" data-sfx="click">
           <div class="diff-card__hud-corner diff-card__hud-corner--tl"></div>
           <div class="diff-card__hud-corner diff-card__hud-corner--br"></div>
           <p class="diff-card__key">02</p>
           <h3 class="diff-card__name">WHATEVER</h3>
           <p class="diff-card__mode">Standard Mode</p>
           <ul class="diff-card__stats">
-            <li><span class="stat-label">GRID</span><span class="stat-val">4 × 4</span></li>
+            <li><span class="stat-label">GRID</span><span class="stat-val">4 &times; 4</span></li>
             <li><span class="stat-label">TIME</span><span class="stat-val">9 sec</span></li>
             <li><span class="stat-label">CELLS</span><span class="stat-val">16</span></li>
           </ul>
-          <div class="diff-card__grid-preview diff-card__grid-preview--4" aria-hidden="true">
-            <span>↑</span><span>→</span><span>↓</span><span>←</span>
-            <span>←</span><span>↑</span><span>→</span><span>↓</span>
-            <span>↓</span><span>←</span><span>↑</span><span>→</span>
-            <span>→</span><span>↓</span><span>←</span><span>↑</span>
-          </div>
-          <div class="diff-card__cta">ENTER ›</div>
+          <div class="diff-card__play-btn">PLAY</div>
         </a>
 
-        <a href="game.html?difficulty=master" class="diff-card diff-card--master" aria-label="Play Hard mode: 5×5 grid">
+        <!-- MASTER -->
+        <a href="game.html?difficulty=master" class="diff-card diff-card--master" aria-label="Hard mode: 5x5 grid" data-sfx="click">
           <div class="diff-card__hud-corner diff-card__hud-corner--tl"></div>
           <div class="diff-card__hud-corner diff-card__hud-corner--br"></div>
           <p class="diff-card__key">03</p>
           <h3 class="diff-card__name">MASTER</h3>
           <p class="diff-card__mode">Hard Mode</p>
           <ul class="diff-card__stats">
-            <li><span class="stat-label">GRID</span><span class="stat-val">5 × 5</span></li>
+            <li><span class="stat-label">GRID</span><span class="stat-val">5 &times; 5</span></li>
             <li><span class="stat-label">TIME</span><span class="stat-val">9 sec</span></li>
             <li><span class="stat-label">CELLS</span><span class="stat-val">25</span></li>
           </ul>
-          <div class="diff-card__grid-preview diff-card__grid-preview--5" aria-hidden="true">
-            <span>↑</span><span>→</span><span>↓</span><span>←</span><span>↑</span>
-            <span>←</span><span>↑</span><span>→</span><span>↓</span><span>←</span>
-            <span>↓</span><span>←</span><span>↑</span><span>→</span><span>↓</span>
-            <span>→</span><span>↓</span><span>←</span><span>↑</span><span>→</span>
-            <span>↑</span><span>→</span><span>↓</span><span>←</span><span>↑</span>
-          </div>
-          <div class="diff-card__cta">ENTER ›</div>
+          <div class="diff-card__play-btn">PLAY</div>
         </a>
 
       </div>
@@ -110,37 +89,27 @@
       <ol class="howto__steps">
         <li class="howto__step">
           <span class="howto__num">01</span>
-          <div>
-            <strong>Grid reveals on GO!</strong><br>
-            Arrows appear in every cell of the grid simultaneously.
-          </div>
+          <div><strong>Grid reveals before GO!</strong><br>All arrows appear 1 second before the timer starts — use it to prepare.</div>
         </li>
         <li class="howto__step">
           <span class="howto__num">02</span>
-          <div>
-            <strong>Match each highlighted cell</strong><br>
-            Input the direction of the glowing cell — top-left to bottom-right.
-          </div>
+          <div><strong>Match each highlighted cell</strong><br>Input the direction of the glowing cell — top-left to bottom-right.</div>
         </li>
         <li class="howto__step">
           <span class="howto__num">03</span>
-          <div>
-            <strong>Wrong input = −1 second</strong><br>
-            Every mistake drains the clock. Stay sharp.
-          </div>
+          <div><strong>Wrong input = &minus;1 second</strong><br>Every mistake drains the clock. Stay sharp.</div>
         </li>
         <li class="howto__step">
           <span class="howto__num">04</span>
-          <div>
-            <strong>Two input modes</strong><br>
-            Desktop: WASD keys or mouse swipe. Mobile: D-pad buttons or swipe screen.
-          </div>
+          <div><strong>Two input modes</strong><br>Desktop: WASD keys or mouse swipe. Mobile: D-pad buttons or swipe screen.</div>
         </li>
       </ol>
     </section>
 
   </main>
 
+  <script src="../../js/audio.js"></script>
+  <script>MiniverseAudio.init({ basePath: '../../' });</script>
   <script src="js/title.js"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@
 
   <!-- ── Top HUD ───────────────────────────────────────────────── -->
   <div class="hud-top">
-    <a href="index.html" class="hud-back" aria-label="Back to title screen">‹ BACK</a>
+    <a href="index.html" class="hud-back" aria-label="Back to title screen" data-sfx="click">‹ BACK</a>
 
     <div class="hud-stats">
       <div class="hud-stat">
@@ -41,8 +41,9 @@
       </div>
     </div>
 
-    <button class="hud-mode-btn" id="js-mode-toggle" aria-label="Switch input mode">
-      SWIPE MODE
+    <button class="hud-mode-btn" id="js-mode-toggle" aria-label="Switch input mode" data-sfx="click">
+      <span class="hud-mode-btn__icon" id="js-mode-icon" aria-hidden="true"></span>
+      <span class="hud-mode-btn__label" id="js-mode-label">WASD</span>
     </button>
   </div>
 
@@ -67,8 +68,8 @@
         <h2 class="result-title" id="js-result-title">CLEARED!</h2>
         <div class="result-stats" id="js-result-stats"></div>
         <div class="result-actions">
-          <button class="game-btn game-btn--primary" id="js-btn-restart">PLAY AGAIN</button>
-          <a href="index.html" class="game-btn game-btn--secondary" id="js-btn-back">MAIN MENU</a>
+          <button class="game-btn game-btn--primary" id="js-btn-restart" data-sfx="click">PLAY AGAIN</button>
+          <a href="index.html" class="game-btn game-btn--secondary" id="js-btn-back" data-sfx="click">MAIN MENU</a>
         </div>
       </div>
     </div>
@@ -113,6 +114,8 @@
   </div><!-- .controls-area -->
 
   <!-- Scripts — load in dependency order -->
+  <script src="../../js/audio.js"></script>
+  <script>MiniverseAudio.init({ basePath: '../../' });</script>
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
   <script src="js/renderer.js"></script>

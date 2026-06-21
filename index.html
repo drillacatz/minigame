@@ -24,8 +24,22 @@
         <span class="site-logo__bracket">[</span>MINI<span class="site-logo__accent">VERSE</span><span class="site-logo__bracket">]</span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="#games" class="site-nav__link">GAMES</a>
-        <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer" class="site-nav__link site-nav__link--ghost">GITHUB</a>
+        <!-- Mute / unmute toggle — also controls SFX on every game page -->
+        <button type="button" class="site-nav__sound" id="js-sound-toggle" aria-label="Mute sound" aria-pressed="false">
+          <svg class="site-nav__sound-icon site-nav__sound-icon--on" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.32v8.64c1.23-1.03 2-2.55 2-4.32z" opacity=".85"/><path d="M14.5 4.97v2.06c2.89.86 5 3.54 5 6.97s-2.11 6.11-5 6.97v2.06c4.01-.91 7-4.49 7-9.03s-2.99-8.12-7-9.03z" opacity=".6"/>
+          </svg>
+          <svg class="site-nav__sound-icon site-nav__sound-icon--off" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display:none">
+            <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M19.5 7.5l-7 7M12.5 7.5l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </button>
+        <!-- GitHub icon only — no text -->
+        <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer"
+           class="site-nav__github" aria-label="GitHub repository" data-sfx="click">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+          </svg>
+        </a>
       </nav>
     </div>
     <div class="site-header__scan" aria-hidden="true"></div>
@@ -34,13 +48,11 @@
   <!-- MAIN -->
   <main class="site-main" role="main">
 
-    <!-- HERO -->
+    <!-- HERO — eyebrow and CTA removed -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero__inner">
-        <p class="hero__eyebrow">// WELCOME TO</p>
         <h1 class="hero__title" id="hero-title">MINIVERSE</h1>
         <p class="hero__sub">A growing collection of browser mini-games.<br>No downloads. No installs. Just play.</p>
-        <a href="#games" class="hero__cta">EXPLORE GAMES &darr;</a>
       </div>
       <div class="hero__grid-deco" aria-hidden="true">
         <div class="hero__grid-line"></div>
@@ -56,9 +68,7 @@
           <p class="section-header__eyebrow">// GAME LIBRARY</p>
           <h2 class="section-header__title" id="games-title">SELECT GAME</h2>
         </header>
-        <div class="games-grid" id="js-games-grid" role="list" aria-label="Available games">
-          <!-- Populated by the inline script below -->
-        </div>
+        <div class="games-grid" id="js-games-grid" role="list" aria-label="Available games"></div>
       </div>
     </section>
 
@@ -67,30 +77,23 @@
   <!-- FOOTER -->
   <footer class="site-footer" role="contentinfo">
     <div class="container site-footer__inner">
-      <p class="site-footer__copy">
-        &copy; <span id="js-year"></span>&nbsp;MINIVERSE &mdash; Pure HTML / CSS / JS
-      </p>
-      <nav class="site-footer__links" aria-label="Footer">
-        <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer">GitHub &nearr;</a>
-      </nav>
+      <p class="site-footer__copy">&copy; 2026 Drillacatz &mdash; Minigame</p>
     </div>
   </footer>
 
   <!-- ============================================================
        GAME REGISTRY + RENDERER  (all inline — zero external deps)
-       To add a new game: copy one object inside GAMES and edit it.
+       To add a game: add an object to the GAMES array below.
        ============================================================ -->
   <script>
   (function () {
     'use strict';
 
-    /* ----------------------------------------------------------
-       GAMES LIST — edit this to add / remove game cards
-       ---------------------------------------------------------- */
+    /* ── GAMES LIST ─ edit here to add / remove cards ─────── */
     var GAMES = [
       {
         title:     'Direction Dash',
-        subtitle:  'Stellar Impulse',
+        subtitle:  '',          /* subtitle removed per user request */
         thumbnail: 'assets/images/direction-dash.svg',
         url:       'games/direction-dash/index.html',
         accent:    '#00d4ff',
@@ -98,7 +101,7 @@
       },
       {
         title:     'Coming Soon',
-        subtitle:  '???',
+        subtitle:  '',
         thumbnail: 'assets/images/coming-soon.svg',
         url:       null,
         accent:    '#ff2d8b',
@@ -106,7 +109,7 @@
       },
       {
         title:     'Coming Soon',
-        subtitle:  '???',
+        subtitle:  '',
         thumbnail: 'assets/images/coming-soon.svg',
         url:       null,
         accent:    '#9d4eff',
@@ -114,93 +117,81 @@
       }
     ];
 
-    /* ----------------------------------------------------------
-       HTML escaping helper
-       ---------------------------------------------------------- */
     function esc(str) {
       if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    /* ----------------------------------------------------------
-       Build one card element
-       ---------------------------------------------------------- */
     function buildCard(game) {
       var isPlayable = !game.locked && !!game.url;
-      var tag  = isPlayable ? 'a' : 'div';
-      var card = document.createElement(tag);
-
-      card.className = 'game-card' + (game.locked ? ' game-card--locked' : '');
-      card.setAttribute('role', 'listitem');
-
+      var el = document.createElement(isPlayable ? 'a' : 'div');
+      el.className = 'game-card' + (game.locked ? ' game-card--locked' : '');
+      el.setAttribute('role', 'listitem');
       if (isPlayable) {
-        card.href = game.url;
-        card.setAttribute('aria-label', 'Play ' + game.title);
+        el.href = game.url;
+        el.setAttribute('aria-label', 'Play ' + game.title);
+        el.setAttribute('data-sfx', 'click'); // plays click.wav via audio.js delegation
       }
+      if (game.accent) el.style.setProperty('--card-accent', game.accent);
 
-      if (game.accent) {
-        card.style.setProperty('--card-accent', game.accent);
-      }
-
-      var lockedBadge = game.locked
-        ? '<div class="game-card__locked-badge">COMING SOON</div>'
-        : '';
-
-      card.innerHTML =
-        '<img' +
-          ' class="game-card__img"' +
-          ' src="' + esc(game.thumbnail) + '"' +
-          ' alt="' + esc(game.title) + '"' +
-          ' loading="lazy"' +
-          ' onerror="this.src=\'assets/images/coming-soon.svg\'"' +
-        '>' +
+      el.innerHTML =
+        '<img class="game-card__img" src="' + esc(game.thumbnail) + '" alt="' + esc(game.title) +
+        '" loading="lazy" onerror="this.src=\'assets/images/coming-soon.svg\'">' +
         '<div class="game-card__banner">' +
-          '<p class="game-card__title">' + esc(game.title)    + '</p>' +
-          '<p class="game-card__sub">'   + esc(game.subtitle) + '</p>' +
+          '<p class="game-card__title">' + esc(game.title) + '</p>' +
+          (game.subtitle ? '<p class="game-card__sub">' + esc(game.subtitle) + '</p>' : '') +
         '</div>' +
-        lockedBadge;
-
-      return card;
+        (game.locked ? '<div class="game-card__locked-badge">COMING SOON</div>' : '');
+      return el;
     }
 
-    /* ----------------------------------------------------------
-       Render cards into the grid
-       ---------------------------------------------------------- */
     function render() {
       var grid = document.getElementById('js-games-grid');
       if (!grid) return;
-
       grid.innerHTML = '';
-
-      if (!GAMES || GAMES.length === 0) {
-        grid.innerHTML = '<p class="games-grid__placeholder">No games yet — check back soon!</p>';
+      if (!GAMES || !GAMES.length) {
+        grid.innerHTML = '<p class="games-grid__placeholder">No games yet.</p>';
         return;
       }
-
       var frag = document.createDocumentFragment();
-      for (var i = 0; i < GAMES.length; i++) {
-        frag.appendChild(buildCard(GAMES[i]));
-      }
+      for (var i = 0; i < GAMES.length; i++) frag.appendChild(buildCard(GAMES[i]));
       grid.appendChild(frag);
-
-      /* Year in footer */
-      var yr = document.getElementById('js-year');
-      if (yr) yr.textContent = new Date().getFullYear();
     }
 
-    /* ----------------------------------------------------------
-       Run after DOM is ready
-       ---------------------------------------------------------- */
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', render);
     } else {
       render();
     }
+  }());
+  </script>
 
+  <!-- ============================================================
+       AUDIO — lobby BGM + click SFX (logic lives in js/audio.js)
+       ============================================================ -->
+  <script src="js/audio.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    MiniverseAudio.init({ basePath: '' });
+    MiniverseAudio.playBgm('lobby');
+
+    var btn   = document.getElementById('js-sound-toggle');
+    var onIco = btn.querySelector('.site-nav__sound-icon--on');
+    var offIco= btn.querySelector('.site-nav__sound-icon--off');
+
+    function syncIcon(muted) {
+      onIco.style.display  = muted ? 'none' : '';
+      offIco.style.display = muted ? '' : 'none';
+      btn.setAttribute('aria-pressed', String(muted));
+      btn.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound');
+    }
+
+    syncIcon(MiniverseAudio.isMuted());
+    btn.addEventListener('click', function () {
+      syncIcon(MiniverseAudio.toggleMute());
+    });
   }());
   </script>
 

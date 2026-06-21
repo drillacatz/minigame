@@ -571,3 +571,40 @@ html, body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Mode toggle button — icon + label ──────────────────────────── */
+.hud-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-mode-btn__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hud-mode-btn__icon svg {
+  display: block;
+}
+
+.hud-mode-btn__label {
+  font-family: var(--font-d);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* ── Transparent countdown overlay (used for GO! over visible grid) */
+.overlay--transparent {
+  background: rgba(5, 5, 15, 0.30) !important;
+  backdrop-filter: blur(1px) !important;
+  -webkit-backdrop-filter: blur(1px) !important;
+}
+
+/* ── Emoji cell symbols — ensure full colour rendering ──────────── */
+.cell__symbol {
+  font-style: normal;
+}
