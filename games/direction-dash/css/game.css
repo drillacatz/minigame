@@ -14,6 +14,7 @@
   --cyan-dim:    rgba(0,212,255,0.15);
   --cyan-glow:   rgba(0,212,255,0.45);
   --pink:        #ff2d8b;
+  --purple:      #9d4eff;
   --green:       #0aff9d;
   --red:         #ff3f3f;
   --gold:        #ffd700;
@@ -185,8 +186,30 @@ html, body {
   transition: border-color 0.15s, background 0.15s;
 }
 
-/* Hidden state (before game starts) */
-.cell--hidden .cell__symbol { opacity: 0.15; color: var(--dim); }
+/* Glitching state — countdown "loading" animation, before arrows freeze */
+.cell--glitch {
+  border-color: rgba(0,212,255,0.16);
+}
+.cell--glitch .cell__symbol {
+  color: rgba(226,226,242,0.55);
+  animation: glitch-flicker 0.12s steps(2, end) infinite;
+}
+
+@keyframes glitch-flicker {
+  0%   { opacity: 1;   transform: translate(0, 0); }
+  50%  { opacity: 0.65; transform: translate(0.6px, -0.6px); }
+  100% { opacity: 1;   transform: translate(-0.6px, 0.6px); }
+}
+
+/* Lock-in — the instant arrows freeze to their real value (countdown hits "1") */
+.cell--revealed.cell--lock .cell__symbol {
+  animation: sym-lock 0.30s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes sym-lock {
+  0%   { transform: scale(1.35); filter: brightness(2.2); }
+  100% { transform: scale(1);    filter: brightness(1); }
+}
 
 /* Revealed (game started) */
 .cell--revealed { border-color: rgba(255,255,255,0.12); }
@@ -281,6 +304,14 @@ html, body {
 }
 
 /* ── Countdown overlay ──────────────────────────────────────────── */
+/* Light, mostly-see-through — the grid is visible (glitching, then
+   frozen) underneath for the entire countdown, not just for GO!. */
+.overlay--countdown {
+  background: rgba(5, 5, 15, 0.30);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
 .overlay--countdown .overlay__box {
   background: none;
 }
@@ -375,6 +406,180 @@ html, body {
   flex-direction: column;
   gap: 10px;
 }
+
+/* ── Start / pause menu overlay ───────────────────────────────────
+   Shown immediately on load (paused) and again via MAIN MENU.
+   Opaque dark backdrop is fine here — there's no grid to protect yet.
+   ─────────────────────────────────────────────────────────────────── */
+.overlay--menu .overlay__box { background: none; width: 100%; height: 100%; }
+
+.menu-box {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: min(92%, 460px);
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 30px 32px 26px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+  text-align: center;
+}
+
+.menu-box__header { display: flex; flex-direction: column; gap: 10px; }
+
+.menu-box__title {
+  font-family: var(--font-d);
+  font-size: clamp(1.5rem, 6vmin, 2.1rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #fff;
+}
+.menu-box__title-accent {
+  color: var(--cyan);
+  text-shadow: 0 0 24px var(--cyan-glow), 0 0 48px rgba(0,212,255,0.2);
+}
+
+.menu-box__tip {
+  font-size: 0.78rem;
+  color: var(--dim);
+  line-height: 1.6;
+  max-width: 36ch;
+  margin-inline: auto;
+}
+
+.menu-section-heading {
+  font-family: var(--font-d);
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  color: var(--dim);
+  margin-bottom: 12px;
+  text-align: left;
+}
+.menu-section-heading__sub {
+  font-family: var(--font-b);
+  letter-spacing: normal;
+  font-weight: 400;
+  font-size: 0.68rem;
+  text-transform: none;
+  color: var(--dim);
+  opacity: 0.7;
+}
+
+/* ── Difficulty mini-cards ───────────────────────────────────────── */
+.menu-diff__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.diff-mini-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.15s ease, border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.diff-mini-card:hover { transform: translateY(-2px); }
+
+.diff-mini-card__name {
+  font-family: var(--font-d);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.diff-mini-card__meta {
+  font-size: 0.62rem;
+  color: var(--dim);
+  letter-spacing: 0.02em;
+}
+
+.diff-mini-card--ezpz     .diff-mini-card__name { color: var(--cyan); }
+.diff-mini-card--whatever .diff-mini-card__name { color: var(--purple); }
+.diff-mini-card--master   .diff-mini-card__name { color: var(--pink); }
+
+.diff-mini-card--ezpz.is-selected {
+  border-color: var(--cyan);
+  background: rgba(0,212,255,0.10);
+  box-shadow: 0 0 16px rgba(0,212,255,0.30);
+}
+.diff-mini-card--whatever.is-selected {
+  border-color: var(--purple);
+  background: rgba(157,78,255,0.10);
+  box-shadow: 0 0 16px rgba(157,78,255,0.30);
+}
+.diff-mini-card--master.is-selected {
+  border-color: var(--pink);
+  background: rgba(255,45,139,0.10);
+  box-shadow: 0 0 16px rgba(255,45,139,0.30);
+}
+
+/* ── Ranking list ────────────────────────────────────────────────── */
+.menu-ranking__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-ranking__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 7px;
+  text-align: left;
+}
+
+.menu-ranking__rank {
+  font-family: var(--font-d);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--dim);
+  min-width: 22px;
+}
+.menu-ranking__diff {
+  font-family: var(--font-d);
+  font-size: 0.70rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+.menu-ranking__score {
+  font-family: var(--font-d);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+.menu-ranking__row--empty .menu-ranking__score { color: var(--border); }
+
+/* ── Start button — centred at the bottom of the menu ───────────── */
+.menu-box__start {
+  display: block;
+  width: auto;
+  align-self: center;
+  margin-top: 4px;
+  padding: 14px 52px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+}
+.menu-box__start:hover { box-shadow: 0 0 22px rgba(0,212,255,0.55); }
+
+/* Hide the on-screen controls while the pause/start menu is open —
+   input is deactivated anyway, so there's nothing for them to do. */
+body.menu-open .controls-area { visibility: hidden; }
 
 /* ── Game buttons ───────────────────────────────────────────────── */
 .game-btn {
@@ -555,12 +760,20 @@ html, body {
   .controls-area { min-height: 100px; padding: 8px 12px 12px; }
   .dpad__btn { width: 46px; height: 46px; font-size: 1.1rem; }
   .dpad { width: 152px; }
+  .menu-box { padding: 24px 18px 20px; gap: 18px; }
+}
+
+@media (max-width: 360px) {
+  .menu-diff__cards { grid-template-columns: 1fr; gap: 8px; }
+  .diff-mini-card { flex-direction: row; justify-content: space-between; padding: 10px 14px; }
 }
 
 @media (max-height: 600px) {
   .controls-area { min-height: 80px; }
   .dpad__btn { width: 40px; height: 40px; }
   .key { width: 36px; height: 36px; }
+  .menu-box { padding: 20px 18px 16px; gap: 14px; }
+  .menu-box__tip { font-size: 0.72rem; }
 }
 
 /* ── Reduced motion ─────────────────────────────────────────────── */
@@ -595,13 +808,6 @@ html, body {
   font-size: 0.55rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-}
-
-/* ── Transparent countdown overlay (used for GO! over visible grid) */
-.overlay--transparent {
-  background: rgba(5, 5, 15, 0.30) !important;
-  backdrop-filter: blur(1px) !important;
-  -webkit-backdrop-filter: blur(1px) !important;
 }
 
 /* ── Emoji cell symbols — ensure full colour rendering ──────────── */

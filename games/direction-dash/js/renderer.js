@@ -45,6 +45,9 @@
       progress:     document.getElementById('js-progress'),
       errors:       document.getElementById('js-errors'),
       grid:         document.getElementById('js-grid'),
+      menu:         document.getElementById('js-menu'),
+      menuRanking:  document.getElementById('js-menu-ranking'),
+      menuDiffCards: document.querySelectorAll('.diff-mini-card'),
       countdown:    document.getElementById('js-countdown'),
       countdownNum: document.getElementById('js-countdown-num'),
       result:       document.getElementById('js-result'),
@@ -60,18 +63,25 @@
   }
 
   /* ── Grid ────────────────────────────────────────────────────── */
+  /**
+   * Build the grid. Cells are visible immediately (no hidden "?" state) —
+   * each one shows a random direction arrow that startGlitch() will
+   * continuously scramble during the countdown "loading" phase.
+   */
   function buildGrid(gridSize, totalCells) {
+    stopGlitch();
     _el.grid.innerHTML = '';
     _el.grid.style.setProperty('--grid-cols', gridSize);
+    var dirs = DD.CONFIG.DIRS;
     var frag = document.createDocumentFragment();
     for (var i = 0; i < totalCells; i++) {
       var cell = document.createElement('div');
-      cell.className = 'cell cell--hidden';
+      cell.className = 'cell cell--glitch';
       cell.setAttribute('data-index', i);
       cell.setAttribute('role', 'gridcell');
       var sym = document.createElement('span');
       sym.className = 'cell__symbol';
-      sym.textContent = '?';
+      sym.textContent = DD.CONFIG.DIR_SYMBOLS[dirs[Math.floor(Math.random() * dirs.length)]];
       cell.appendChild(sym);
       frag.appendChild(cell);
     }
@@ -82,26 +92,44 @@
     return _el.grid.querySelector('[data-index="' + index + '"]');
   }
 
-  function revealCell(index, direction) {
-    var cell = _getCell(index);
-    if (!cell) return;
-    var sym = DD.CONFIG.DIR_SYMBOLS[direction] || '?';
-    cell.querySelector('.cell__symbol').textContent = sym;
-    cell.className = 'cell cell--revealed';
-    cell.setAttribute('data-dir', direction);
+  var _glitchTimerId = null;
+
+  /**
+   * Start the "loading / preparing" glitch animation — every cell's arrow
+   * randomly re-rolls on a fast interval while the countdown runs.
+   */
+  function startGlitch() {
+    stopGlitch();
+    var dirs    = DD.CONFIG.DIRS;
+    var symbols = DD.CONFIG.DIR_SYMBOLS;
+    _glitchTimerId = setInterval(function () {
+      var syms = _el.grid.querySelectorAll('.cell--glitch .cell__symbol');
+      syms.forEach(function (s) {
+        s.textContent = symbols[dirs[Math.floor(Math.random() * dirs.length)]];
+      });
+    }, DD.CONFIG.GLITCH_INTERVAL_MS);
   }
 
-  function revealAll(grid, onDone) {
-    var staggerMs = Math.min(20, 400 / grid.length);
+  function stopGlitch() {
+    if (_glitchTimerId !== null) {
+      clearInterval(_glitchTimerId);
+      _glitchTimerId = null;
+    }
+  }
+
+  /**
+   * Freeze every cell to its real, final direction — called the instant
+   * the countdown hits "1". Stops the glitch and locks in the actual puzzle.
+   */
+  function freezeGrid(grid) {
+    stopGlitch();
     for (var i = 0; i < grid.length; i++) {
-      (function(idx, dir) {
-        setTimeout(function() {
-          revealCell(idx, dir);
-          if (idx === grid.length - 1 && typeof onDone === 'function') {
-            setTimeout(onDone, 260);
-          }
-        }, idx * staggerMs);
-      })(i, grid[i]);
+      var cell = _getCell(i);
+      if (!cell) continue;
+      var dir = grid[i];
+      cell.querySelector('.cell__symbol').textContent = DD.CONFIG.DIR_SYMBOLS[dir] || '?';
+      cell.className = 'cell cell--revealed cell--lock';
+      cell.setAttribute('data-dir', dir);
     }
   }
 
@@ -160,7 +188,7 @@
   /* ── Countdown overlay ───────────────────────────────────────── */
   function showCountdownStep(text, onDone) {
     if (!_el.countdown) { onDone && onDone(); return; }
-    _el.countdown.classList.remove('hidden', 'overlay--transparent');
+    _el.countdown.classList.remove('hidden');
     _el.countdownNum.textContent = text;
     /* Restart CSS animation by cloning the element */
     var old = _el.countdownNum;
@@ -171,13 +199,12 @@
   }
 
   /**
-   * Show "GO!" over a semi-transparent overlay so the grid remains visible.
-   * The player can see the arrows while GO! flashes.
+   * Show "GO!" over the same transparent overlay used for the countdown
+   * — the grid (now frozen to its real arrows) stays fully visible.
    */
   function showGoFlash(onDone) {
     if (!_el.countdown) { onDone && onDone(); return; }
     _el.countdown.classList.remove('hidden');
-    _el.countdown.classList.add('overlay--transparent');
     _el.countdownNum.textContent = 'GO!';
     var old = _el.countdownNum;
     var clone = old.cloneNode(true);
@@ -185,13 +212,57 @@
     _el.countdownNum = clone;
     setTimeout(function() {
       _el.countdown.classList.add('hidden');
-      _el.countdown.classList.remove('overlay--transparent');
       onDone && onDone();
     }, DD.CONFIG.GO_SHOW_MS);
   }
 
   function hideCountdown() {
     if (_el.countdown) _el.countdown.classList.add('hidden');
+  }
+
+  /* ── Start / pause menu overlay ─────────────────────────────────
+     Shown immediately on page load (game is "paused") and again
+     whenever the player backs out to "MAIN MENU" after a round.
+     ───────────────────────────────────────────────────────────── */
+  function showMenu() {
+    if (_el.menu) _el.menu.classList.remove('hidden');
+    document.body.classList.add('menu-open');
+  }
+
+  function hideMenu() {
+    if (_el.menu) _el.menu.classList.add('hidden');
+    document.body.classList.remove('menu-open');
+  }
+
+  function setMenuSelection(diffKey) {
+    if (!_el.menuDiffCards) return;
+    _el.menuDiffCards.forEach(function (card) {
+      var selected = card.getAttribute('data-diff') === diffKey;
+      card.classList.toggle('is-selected', selected);
+      card.setAttribute('aria-pressed', String(selected));
+    });
+  }
+
+  function bindMenuDiffCards(onSelect) {
+    if (!_el.menuDiffCards) return;
+    _el.menuDiffCards.forEach(function (card) {
+      card.addEventListener('click', function () {
+        onSelect(card.getAttribute('data-diff'));
+      });
+    });
+  }
+
+  /** entries: [{ label, score: number|null }, ...] already sorted by caller */
+  function renderRanking(entries) {
+    if (!_el.menuRanking) return;
+    _el.menuRanking.innerHTML = entries.map(function (entry, i) {
+      var hasScore = typeof entry.score === 'number';
+      return '<li class="menu-ranking__row' + (hasScore ? '' : ' menu-ranking__row--empty') + '">' +
+        '<span class="menu-ranking__rank">#' + (i + 1) + '</span>' +
+        '<span class="menu-ranking__diff">' + entry.label + '</span>' +
+        '<span class="menu-ranking__score">' + (hasScore ? entry.score : '—') + '</span>' +
+      '</li>';
+    }).join('');
   }
 
   /* ── Result overlay ──────────────────────────────────────────── */
@@ -248,9 +319,11 @@
   }
 
   DD.Renderer = {
-    init, buildGrid, revealAll, setActiveCell, flashCell, markCellDone,
+    init, buildGrid, startGlitch, stopGlitch, freezeGrid,
+    setActiveCell, flashCell, markCellDone,
     updateTimer, setDiffLabel, updateStats,
     showCountdownStep, showGoFlash, hideCountdown,
+    showMenu, hideMenu, setMenuSelection, bindMenuDiffCards, renderRanking,
     showResult, hideResult, setInputMode, flashKey,
   };
 

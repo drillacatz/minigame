@@ -20,7 +20,7 @@
 
   <!-- ── Top HUD ───────────────────────────────────────────────── -->
   <div class="hud-top">
-    <a href="index.html" class="hud-back" aria-label="Back to title screen" data-sfx="click">‹ BACK</a>
+    <a href="../../index.html" class="hud-back" aria-label="Back to Miniverse home" data-sfx="click">‹ MINIVERSE</a>
 
     <div class="hud-stats">
       <div class="hud-stat">
@@ -53,6 +53,44 @@
     <!-- Direction grid – cells injected by renderer.js -->
     <div class="grid" id="js-grid" role="grid" aria-label="Direction input grid"></div>
 
+    <!-- ── Start / pause menu overlay (difficulty select + ranking + start) ── -->
+    <div class="overlay overlay--menu" id="js-menu"
+         role="dialog" aria-modal="true" aria-labelledby="js-menu-title">
+      <div class="menu-box">
+
+        <header class="menu-box__header">
+          <h1 class="menu-box__title" id="js-menu-title">DIRECTION<span class="menu-box__title-accent">DASH</span></h1>
+          <p class="menu-box__tip">Match each glowing arrow before time runs out. Wrong move = &minus;1 second.</p>
+        </header>
+
+        <section class="menu-diff" aria-labelledby="js-menu-diff-heading">
+          <h2 class="menu-section-heading" id="js-menu-diff-heading">SELECT DIFFICULTY</h2>
+          <div class="menu-diff__cards">
+            <button type="button" class="diff-mini-card diff-mini-card--ezpz" data-diff="ezpz" data-sfx="click" aria-pressed="false">
+              <span class="diff-mini-card__name">EZPZ</span>
+              <span class="diff-mini-card__meta">3&times;3 &middot; 9s</span>
+            </button>
+            <button type="button" class="diff-mini-card diff-mini-card--whatever" data-diff="whatever" data-sfx="click" aria-pressed="false">
+              <span class="diff-mini-card__name">WHATEVER</span>
+              <span class="diff-mini-card__meta">4&times;4 &middot; 9s</span>
+            </button>
+            <button type="button" class="diff-mini-card diff-mini-card--master" data-diff="master" data-sfx="click" aria-pressed="false">
+              <span class="diff-mini-card__name">MASTER</span>
+              <span class="diff-mini-card__meta">5&times;5 &middot; 9s</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="menu-ranking" aria-labelledby="js-menu-rank-heading">
+          <h2 class="menu-section-heading" id="js-menu-rank-heading">RANKING <span class="menu-section-heading__sub">(your best)</span></h2>
+          <ol class="menu-ranking__list" id="js-menu-ranking" aria-live="polite"></ol>
+        </section>
+
+        <button type="button" class="game-btn game-btn--primary menu-box__start" id="js-btn-start" data-sfx="click">START GAME</button>
+
+      </div>
+    </div>
+
     <!-- ── Countdown overlay ─── -->
     <div class="overlay overlay--countdown" id="js-countdown"
          role="status" aria-live="assertive" aria-label="Countdown">
@@ -68,8 +106,8 @@
         <h2 class="result-title" id="js-result-title">CLEARED!</h2>
         <div class="result-stats" id="js-result-stats"></div>
         <div class="result-actions">
-          <button class="game-btn game-btn--primary" id="js-btn-restart" data-sfx="click">PLAY AGAIN</button>
-          <a href="index.html" class="game-btn game-btn--secondary" id="js-btn-back" data-sfx="click">MAIN MENU</a>
+          <button type="button" class="game-btn game-btn--primary" id="js-btn-restart" data-sfx="click">PLAY AGAIN</button>
+          <button type="button" class="game-btn game-btn--secondary" id="js-btn-mainmenu" data-sfx="click">MAIN MENU</button>
         </div>
       </div>
     </div>

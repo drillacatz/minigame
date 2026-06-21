@@ -1,6 +1,8 @@
 /* =====================================================================
    js/game.js  —  Direction Dash main controller
-   Countdown flow: READY → 3 → 2 → 1 → [grid reveals] → pause → GO! → play
+   Flow: [paused menu: pick difficulty + view ranking] → START GAME →
+         countdown (READY → 3 → 2 → 1, grid visible & glitching the whole
+         time) → arrows freeze on "1" → GO! → play
    ===================================================================== */
 
 (function (DD) {
@@ -21,7 +23,44 @@
       this._diffKey = params.get('difficulty') || 'ezpz';
       if (!DD.CONFIG.DIFFICULTIES[this._diffKey]) this._diffKey = 'ezpz';
       this._bindPermanentUI();
+      this._openMenu();
+    }
+
+    /* ================================================================
+       Paused start menu — difficulty select + ranking + START GAME.
+       Shown on first load, and again via "MAIN MENU" after a round.
+       ================================================================ */
+    _openMenu() {
+      this._timer?.stop();
+      this._timer = null;
+      this._input?.deactivate();
+      DD.Renderer.hideResult();
+      DD.Renderer.setMenuSelection(this._diffKey);
+      DD.Renderer.renderRanking(this._loadRanking());
+      DD.Renderer.showMenu();
+    }
+
+    _selectDiff(diffKey) {
+      if (!DD.CONFIG.DIFFICULTIES[diffKey]) return;
+      this._diffKey = diffKey;
+      DD.Renderer.setMenuSelection(diffKey);
+    }
+
+    _startFromMenu() {
+      DD.Renderer.hideMenu();
       this._setupGame();
+    }
+
+    _loadRanking() {
+      const labels = { ezpz: 'EZPZ', whatever: 'WHATEVER', master: 'MASTER' };
+      let store = {};
+      try {
+        const raw = localStorage.getItem(DD.CONFIG.LS_KEY);
+        store = raw ? JSON.parse(raw) : {};
+      } catch { store = {}; }
+      return Object.keys(labels)
+        .map((key) => ({ key, label: labels[key], score: store[key]?.score ?? null }))
+        .sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
     }
 
     _setupGame() {
@@ -47,22 +86,29 @@
       DD.Renderer.hideResult();
 
       this._state.setPhase('countdown');
+      DD.Renderer.startGlitch();   // grid is visible now; arrows glitch as a "loading" animation
       this._runCountdown(0);
     }
 
     /* ================================================================
        Countdown:  READY → 3 → 2 → 1
-                       ↓ (after "1")
-                   hide overlay → reveal grid → pause → GO! → play
+       The grid is visible (and glitching) for the whole countdown.
+       The instant "1" appears, every arrow freezes to its real value.
        ================================================================ */
     _runCountdown(stepIndex) {
       const seq = DD.CONFIG.COUNTDOWN_SEQ;  // ['READY','3','2','1']
 
       if (stepIndex < seq.length) {
+        const isFinalStep = stepIndex === seq.length - 1;  // the "1" step
+
+        if (isFinalStep) {
+          // Freeze the glitching arrows into their real, final values right now.
+          DD.Renderer.freezeGrid(this._state.grid);
+        }
+
         DD.Renderer.showCountdownStep(seq[stepIndex], () => {
-          if (stepIndex === seq.length - 1) {
-            // Last step ("1") just finished — reveal grid then show GO!
-            this._revealThenGo();
+          if (isFinalStep) {
+            this._goAfterFreeze();
           } else {
             this._runCountdown(stepIndex + 1);
           }
@@ -70,21 +116,11 @@
       }
     }
 
-    _revealThenGo() {
-      // 1. Hide the countdown overlay so the grid is fully visible
-      DD.Renderer.hideCountdown();
-
-      // 2. Reveal all cells with stagger animation
-      DD.Renderer.revealAll(this._state.grid, () => {
-        // 3. Short pause so player can scan the grid
-        setTimeout(() => {
-          // 4. Flash "GO!" over a semi-transparent overlay (grid still visible)
-          DD.Renderer.showGoFlash(() => {
-            // 5. Game begins — timer starts now
-            this._startPlaying();
-          });
-        }, DD.CONFIG.PRE_GO_PAUSE_MS);
-      });
+    _goAfterFreeze() {
+      // Short pause so the player can register the now-locked grid, then GO!
+      setTimeout(() => {
+        DD.Renderer.showGoFlash(() => this._startPlaying());
+      }, DD.CONFIG.PRE_GO_PAUSE_MS);
     }
 
     _startPlaying() {
@@ -192,7 +228,10 @@
 
     _bindPermanentUI() {
       document.getElementById('js-btn-restart')?.addEventListener('click', () => this._setupGame());
+      document.getElementById('js-btn-mainmenu')?.addEventListener('click', () => this._openMenu());
+      document.getElementById('js-btn-start')?.addEventListener('click', () => this._startFromMenu());
       document.getElementById('js-mode-toggle')?.addEventListener('click', () => this._input?.toggleSwipe());
+      DD.Renderer.bindMenuDiffCards((diffKey) => this._selectDiff(diffKey));
     }
   }
 

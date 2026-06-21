@@ -11,7 +11,7 @@ var GAMES_REGISTRY = [
     subtitle:    'Stellar Impulse',
     description: 'Navigate a randomized direction grid before the clock runs out. Wrong inputs cost time.',
     thumbnail:   'assets/images/direction-dash.svg',
-    url:         'games/direction-dash/index.html',
+    url:         'games/direction-dash/game.html',
     tags:        ['action', 'reflex', 'grid'],
     accent:      '#00d4ff',
   },

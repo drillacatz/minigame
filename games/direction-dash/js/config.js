@@ -46,7 +46,9 @@
     /* ── Countdown — GO! is triggered separately after grid reveal */
     COUNTDOWN_SEQ:     Object.freeze(['READY', '3', '2', '1']),
     COUNTDOWN_STEP_MS: 700,
-    /* Pause (ms) after grid reveals before showing GO! */
+    /* How often (ms) each cell's arrow randomly changes while "loading" during countdown */
+    GLITCH_INTERVAL_MS: 90,
+    /* Pause (ms) after the grid freezes before showing GO! */
     PRE_GO_PAUSE_MS:   500,
     /* How long GO! is shown before game starts */
     GO_SHOW_MS:        600,
