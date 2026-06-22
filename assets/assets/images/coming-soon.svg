@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <linearGradient id="cs-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#080810"/>
+      <stop offset="100%" stop-color="#0e0818"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#cs-bg)"/>
+
+  <!-- Grid dots -->
+  <g fill="#1a1a30" opacity="0.8">
+    <circle cx="60"  cy="80"  r="1.5"/>
+    <circle cx="150" cy="80"  r="1.5"/>
+    <circle cx="240" cy="80"  r="1.5"/>
+    <circle cx="60"  cy="160" r="1.5"/>
+    <circle cx="150" cy="160" r="1.5"/>
+    <circle cx="240" cy="160" r="1.5"/>
+    <circle cx="60"  cy="240" r="1.5"/>
+    <circle cx="150" cy="240" r="1.5"/>
+    <circle cx="240" cy="240" r="1.5"/>
+    <circle cx="60"  cy="320" r="1.5"/>
+    <circle cx="150" cy="320" r="1.5"/>
+    <circle cx="240" cy="320" r="1.5"/>
+  </g>
+
+  <!-- Central question mark -->
+  <text x="150" y="225"
+    text-anchor="middle"
+    font-family="'Orbitron','Courier New',monospace"
+    font-weight="900"
+    font-size="80"
+    fill="#1a1a35"
+    letter-spacing="0">?</text>
+
+  <!-- Bottom scrim -->
+  <defs>
+    <linearGradient id="cs-scrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#080810" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#080810" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="295" width="300" height="105" fill="url(#cs-scrim)"/>
+
+  <!-- Label -->
+  <text x="150" y="362"
+    text-anchor="middle"
+    font-family="'Orbitron','Courier New',monospace"
+    font-weight="700"
+    font-size="12"
+    fill="#2a2a50"
+    letter-spacing="4">COMING SOON</text>
+</svg>

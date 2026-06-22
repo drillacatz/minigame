@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -12,16 +12,12 @@
 </head>
 <body class="game-body">
 
-  <!-- ── Timer bar (absolute top of viewport) ─────────────────── -->
-  <div class="timer-bar-wrap" role="progressbar"
-       aria-label="Time remaining" aria-valuemin="0" aria-valuemax="100">
+  <div class="timer-bar-wrap" role="progressbar" aria-label="Time remaining" aria-valuemin="0" aria-valuemax="100">
     <div class="timer-bar__fill" id="js-timer-fill"></div>
   </div>
 
-  <!-- ── Top HUD ───────────────────────────────────────────────── -->
   <div class="hud-top">
     <a href="../../index.html" class="hud-back" aria-label="Back to Miniverse home" data-sfx="click">‹ MINIVERSE</a>
-
     <div class="hud-stats">
       <div class="hud-stat">
         <span class="hud-stat__label">DIFFICULTY</span>
@@ -40,118 +36,101 @@
         <span class="hud-stat__value hud-stat__value--errors" id="js-errors">0</span>
       </div>
     </div>
-
-    <button class="hud-mode-btn" id="js-mode-toggle" aria-label="Switch input mode" data-sfx="click">
-      <span class="hud-mode-btn__icon" id="js-mode-icon" aria-hidden="true"></span>
-      <span class="hud-mode-btn__label" id="js-mode-label">WASD</span>
+    <button class="hud-theme-btn" id="js-theme-toggle" aria-label="Toggle theme" data-sfx="click">
+      <span class="hud-theme-btn__icon" id="js-theme-icon">◑</span>
     </button>
   </div>
 
-  <!-- ── Game arena (grid + all overlays share this space) ─────── -->
   <div class="game-arena" id="js-game-area">
-
-    <!-- Direction grid – cells injected by renderer.js -->
     <div class="grid" id="js-grid" role="grid" aria-label="Direction input grid"></div>
 
-    <!-- ── Start / pause menu overlay (difficulty select + ranking + start) ── -->
-    <div class="overlay overlay--menu" id="js-menu"
-         role="dialog" aria-modal="true" aria-labelledby="js-menu-title">
-      <div class="menu-box">
-
+    <div class="panel" id="js-panel-menu" role="dialog" aria-modal="true" aria-labelledby="js-menu-title">
+      <div class="panel__box menu-box">
         <header class="menu-box__header">
           <h1 class="menu-box__title" id="js-menu-title">DIRECTION<span class="menu-box__title-accent">DASH</span></h1>
           <p class="menu-box__tip">Match each glowing arrow before time runs out. Wrong move = &minus;1 second.</p>
         </header>
-
         <section class="menu-diff" aria-labelledby="js-menu-diff-heading">
           <h2 class="menu-section-heading" id="js-menu-diff-heading">SELECT DIFFICULTY</h2>
           <div class="menu-diff__cards">
-            <button type="button" class="diff-mini-card diff-mini-card--ezpz" data-diff="ezpz" data-sfx="click" aria-pressed="false">
-              <span class="diff-mini-card__name">EZPZ</span>
-              <span class="diff-mini-card__meta">3&times;3 &middot; 9s</span>
+            <button type="button" class="diff-card diff-card--ezpz" data-diff="ezpz" data-sfx="click" aria-pressed="false">
+              <span class="diff-card__name">EZPZ</span>
+              <span class="diff-card__meta">3×3 · 9s</span>
             </button>
-            <button type="button" class="diff-mini-card diff-mini-card--whatever" data-diff="whatever" data-sfx="click" aria-pressed="false">
-              <span class="diff-mini-card__name">WHATEVER</span>
-              <span class="diff-mini-card__meta">4&times;4 &middot; 9s</span>
+            <button type="button" class="diff-card diff-card--whatever" data-diff="whatever" data-sfx="click" aria-pressed="false">
+              <span class="diff-card__name">WHATEVER</span>
+              <span class="diff-card__meta">4×4 · 9s</span>
             </button>
-            <button type="button" class="diff-mini-card diff-mini-card--master" data-diff="master" data-sfx="click" aria-pressed="false">
-              <span class="diff-mini-card__name">MASTER</span>
-              <span class="diff-mini-card__meta">5&times;5 &middot; 9s</span>
+            <button type="button" class="diff-card diff-card--master" data-diff="master" data-sfx="click" aria-pressed="false">
+              <span class="diff-card__name">MASTER</span>
+              <span class="diff-card__meta">5×5 · 9s</span>
             </button>
           </div>
         </section>
-
         <section class="menu-ranking" aria-labelledby="js-menu-rank-heading">
-          <h2 class="menu-section-heading" id="js-menu-rank-heading">RANKING <span class="menu-section-heading__sub">(your best)</span></h2>
-          <ol class="menu-ranking__list" id="js-menu-ranking" aria-live="polite"></ol>
+          <h2 class="menu-section-heading" id="js-menu-rank-heading">BEST SCORES</h2>
+          <ol class="ranking-list" id="js-menu-ranking" aria-live="polite"></ol>
         </section>
-
         <button type="button" class="game-btn game-btn--primary menu-box__start" id="js-btn-start" data-sfx="click">START GAME</button>
-
       </div>
     </div>
 
-    <!-- ── Countdown overlay ─── -->
-    <div class="overlay overlay--countdown hidden" id="js-countdown"
-         role="status" aria-live="assertive" aria-label="Countdown">
-      <div class="overlay__box">
+    <div class="panel panel--transparent" id="js-panel-countdown" role="status" aria-live="assertive" aria-label="Countdown">
+      <div class="countdown-display">
         <span class="countdown-num" id="js-countdown-num">3</span>
       </div>
     </div>
 
-    <!-- ── Result overlay ─── -->
-    <div class="overlay overlay--result hidden" id="js-result"
-         role="dialog" aria-modal="true" aria-labelledby="js-result-title">
-      <div class="overlay__box result-box">
+    <div class="panel" id="js-panel-result" role="dialog" aria-modal="true" aria-labelledby="js-result-title">
+      <div class="panel__box result-box">
         <h2 class="result-title" id="js-result-title">CLEARED!</h2>
         <div class="result-stats" id="js-result-stats"></div>
+        <div class="result-leaderboard" id="js-result-leaderboard"></div>
         <div class="result-actions">
           <button type="button" class="game-btn game-btn--primary" id="js-btn-restart" data-sfx="click">PLAY AGAIN</button>
           <button type="button" class="game-btn game-btn--secondary" id="js-btn-mainmenu" data-sfx="click">CHANGE DIFFICULTY</button>
         </div>
       </div>
     </div>
+  </div>
 
-  </div><!-- .game-arena -->
-
-  <!-- ── Controls area ─────────────────────────────────────────── -->
   <div class="controls-area">
-
-    <!-- D-pad (mobile / buttons mode, hidden by default on desktop) -->
     <div class="dpad hidden" id="js-dpad" aria-label="Directional pad">
       <div class="dpad__row">
-        <button class="dpad__btn" data-dir="up"    aria-label="Up">▲</button>
+        <button class="dpad__btn" data-dir="up" aria-label="Up">▲</button>
       </div>
       <div class="dpad__row dpad__row--mid">
-        <button class="dpad__btn" data-dir="left"  aria-label="Left">◄</button>
-        <div    class="dpad__center" aria-hidden="true">●</div>
+        <button class="dpad__btn" data-dir="left" aria-label="Left">◄</button>
+        <div class="dpad__center" aria-hidden="true">●</div>
         <button class="dpad__btn" data-dir="right" aria-label="Right">►</button>
       </div>
       <div class="dpad__row">
-        <button class="dpad__btn" data-dir="down"  aria-label="Down">▼</button>
+        <button class="dpad__btn" data-dir="down" aria-label="Down">▼</button>
       </div>
     </div>
 
-    <!-- Keyboard hint (desktop, keyboard mode) -->
     <div class="kb-hint" id="js-kb-hint" aria-label="Keyboard controls: W A S D">
-      <div class="kb-hint__row"><kbd class="key">W</kbd></div>
+      <div class="kb-hint__row"><kbd class="key" data-key="w">W</kbd></div>
       <div class="kb-hint__row">
-        <kbd class="key">A</kbd>
-        <kbd class="key">S</kbd>
-        <kbd class="key">D</kbd>
+        <kbd class="key" data-key="a">A</kbd>
+        <kbd class="key" data-key="s">S</kbd>
+        <kbd class="key" data-key="d">D</kbd>
       </div>
-      <p class="kb-hint__label">WASD to input</p>
     </div>
 
-    <!-- Swipe hint -->
     <div class="swipe-hint hidden" id="js-swipe-hint" aria-label="Swipe to input direction">
       <div class="swipe-hint__icon">↕ ↔</div>
       <p class="swipe-hint__label">SWIPE TO INPUT</p>
     </div>
 
-  </div><!-- .controls-area -->
+    <div class="controls-footer">
+      <button class="mode-toggle-btn" id="js-mode-toggle" aria-label="Switch input mode" data-sfx="click">
+        <span id="js-mode-icon" aria-hidden="true"></span>
+        <span id="js-mode-label">WASD</span>
+      </button>
+    </div>
+  </div>
 
-  <!-- Scripts — load in dependency order -->
   <script src="../../js/audio.js"></script>
   <script>MiniverseAudio.init({ basePath: '../../' });</script>
   <script src="js/config.js"></script>

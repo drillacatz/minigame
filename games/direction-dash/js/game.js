@@ -1,10 +1,3 @@
-/* =====================================================================
-   js/game.js  —  Direction Dash main controller
-   Flow: [paused menu: pick difficulty + view ranking] → START GAME →
-         countdown (READY → 3 → 2 → 1, grid visible & glitching the whole
-         time) → arrows freeze on "1" → GO! → play
-   ===================================================================== */
-
 (function (DD) {
   'use strict';
 
@@ -19,13 +12,10 @@
 
     init() {
       DD.Renderer.init();
-      const params  = new URLSearchParams(window.location.search);
+      var params    = new URLSearchParams(window.location.search);
       this._diffKey = params.get('difficulty') || 'ezpz';
       if (!DD.CONFIG.DIFFICULTIES[this._diffKey]) this._diffKey = 'ezpz';
       this._bindPermanentUI();
-
-      // When launched from the homepage quick-launch modal (?difficulty=xxx),
-      // skip the pause menu entirely and start the countdown immediately.
       if (params.get('difficulty')) {
         this._setupGame();
       } else {
@@ -33,17 +23,11 @@
       }
     }
 
-    /* ================================================================
-       Pause / difficulty menu — shown on direct navigation (no URL param)
-       and again when the player clicks "CHANGE DIFFICULTY" after a round.
-       ================================================================ */
     _openMenu() {
-      this._timer?.stop();
+      this._timer && this._timer.stop();
       this._timer = null;
-      this._input?.deactivate();
+      this._input && this._input.deactivate();
       DD.Renderer.hideResult();
-      // BUG FIX: countdown overlay starts visible in HTML (no `hidden` class);
-      // without this call it would sit on top of the menu and swallow all clicks.
       DD.Renderer.hideCountdown();
       DD.Renderer.setMenuSelection(this._diffKey);
       DD.Renderer.renderRanking(this._loadRanking());
@@ -62,33 +46,34 @@
     }
 
     _loadRanking() {
-      const labels = { ezpz: 'EZPZ', whatever: 'WHATEVER', master: 'MASTER' };
-      let store = {};
+      var labels = { ezpz: 'EZPZ', whatever: 'WHATEVER', master: 'MASTER' };
+      var store = {};
       try {
-        const raw = localStorage.getItem(DD.CONFIG.LS_KEY);
+        var raw = localStorage.getItem(DD.CONFIG.LS_KEY);
         store = raw ? JSON.parse(raw) : {};
-      } catch { store = {}; }
+      } catch(e) { store = {}; }
       return Object.keys(labels)
-        .map((key) => ({ key, label: labels[key], score: store[key]?.score ?? null }))
-        .sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+        .map(function (key) { return { key: key, label: labels[key], score: store[key] ? store[key].score : null }; })
+        .sort(function (a, b) { return ((b.score !== null ? b.score : -1)) - (a.score !== null ? a.score : -1); });
     }
 
     _setupGame() {
-      this._timer?.stop();
-      this._input?.destroy();
+      this._timer && this._timer.stop();
+      this._input && this._input.destroy();
       this._inputLocked = false;
 
       this._state = new DD.GameState();
       this._state.setup(this._diffKey);
 
-      const gameAreaEl = document.getElementById('js-game-area');
-      const dpadEl     = document.getElementById('js-dpad');
+      var gameAreaEl = document.getElementById('js-game-area');
+      var dpadEl     = document.getElementById('js-dpad');
       this._input = new DD.InputManager(gameAreaEl, dpadEl, (dir) => this._handlePlayerInput(dir));
-      const defaultMode = DD.isMobile() ? DD.CONFIG.MODES.BUTTONS : DD.CONFIG.MODES.KEYBOARD;
+      var defaultMode = DD.isMobile() ? DD.CONFIG.MODES.BUTTONS : DD.CONFIG.MODES.KEYBOARD;
       this._input.setMode(defaultMode);
       this._input.deactivate();
 
-      const { difficulty, totalCells } = this._state;
+      var totalCells = this._state.totalCells;
+      var difficulty = this._state.difficulty;
       DD.Renderer.buildGrid(difficulty.gridSize, totalCells);
       DD.Renderer.setDiffLabel(difficulty.label);
       DD.Renderer.updateTimer(difficulty.timeLimit, 1);
@@ -96,41 +81,26 @@
       DD.Renderer.hideResult();
 
       this._state.setPhase('countdown');
-      DD.Renderer.startGlitch();   // grid is visible now; arrows glitch as a "loading" animation
+      DD.Renderer.startGlitch();
       this._runCountdown(0);
     }
 
-    /* ================================================================
-       Countdown:  READY → 3 → 2 → 1
-       The grid is visible (and glitching) for the whole countdown.
-       The instant "1" appears, every arrow freezes to its real value.
-       ================================================================ */
     _runCountdown(stepIndex) {
-      const seq = DD.CONFIG.COUNTDOWN_SEQ;  // ['READY','3','2','1']
-
-      if (stepIndex < seq.length) {
-        const isFinalStep = stepIndex === seq.length - 1;  // the "1" step
-
+      var seq = DD.CONFIG.COUNTDOWN_SEQ;
+      if (stepIndex >= seq.length) return;
+      var isFinalStep = stepIndex === seq.length - 1;
+      if (isFinalStep) DD.Renderer.freezeGrid(this._state.grid);
+      DD.Renderer.showCountdownStep(seq[stepIndex], () => {
         if (isFinalStep) {
-          // Freeze the glitching arrows into their real, final values right now.
-          DD.Renderer.freezeGrid(this._state.grid);
+          this._goAfterFreeze();
+        } else {
+          this._runCountdown(stepIndex + 1);
         }
-
-        DD.Renderer.showCountdownStep(seq[stepIndex], () => {
-          if (isFinalStep) {
-            this._goAfterFreeze();
-          } else {
-            this._runCountdown(stepIndex + 1);
-          }
-        });
-      }
+      });
     }
 
     _goAfterFreeze() {
-      // Short pause so the player can register the now-locked grid, then GO!
-      setTimeout(() => {
-        DD.Renderer.showGoFlash(() => this._startPlaying());
-      }, DD.CONFIG.PRE_GO_PAUSE_MS);
+      setTimeout(() => { DD.Renderer.showGoFlash(() => this._startPlaying()); }, DD.CONFIG.PRE_GO_PAUSE_MS);
     }
 
     _startPlaying() {
@@ -142,7 +112,7 @@
     }
 
     _startTimer() {
-      const timeLimit = this._state.difficulty.timeLimit;
+      var timeLimit = this._state.difficulty.timeLimit;
       this._timer = new DD.Timer({
         totalSeconds: timeLimit,
         onTick:   (remaining, fraction) => DD.Renderer.updateTimer(remaining, fraction),
@@ -151,11 +121,9 @@
       this._timer.start();
     }
 
-    /* ================================================================
-       Input
-       ================================================================ */
     _handlePlayerInput(direction) {
       if (this._state.phase !== 'playing' || this._inputLocked) return;
+      DD.Renderer.flashKey(direction, direction === this._state.expectedDir ? 'correct' : 'wrong');
       if (direction === this._state.expectedDir) {
         this._onCorrectInput();
       } else {
@@ -164,7 +132,7 @@
     }
 
     _onCorrectInput() {
-      const idx = this._state.currentIndex;
+      var idx = this._state.currentIndex;
       MiniverseAudio.playSfx('correct');
       DD.Renderer.flashCell(idx, 'correct');
       this._state.registerCorrect();
@@ -183,28 +151,28 @@
       this._inputLocked = true;
       MiniverseAudio.playSfx('wrong');
       DD.Renderer.flashCell(this._state.currentIndex, 'wrong');
-      DD.Renderer.flashKey(direction);
       this._state.registerWrong();
       DD.Renderer.updateStats(this._state.currentIndex, this._state.totalCells, this._state.wrongCount);
-      this._timer?.penalize(DD.CONFIG.PENALTY_SEC);
+      this._timer && this._timer.penalize(DD.CONFIG.PENALTY_SEC);
       setTimeout(() => { this._inputLocked = false; }, DD.CONFIG.INPUT_LOCK_MS);
     }
 
-    /* ================================================================
-       Win / Lose
-       ================================================================ */
     _handleWin() {
       if (this._state.phase !== 'playing') return;
       this._state.setPhase('win');
-      this._timer?.stop();
+      this._timer && this._timer.stop();
       this._input.deactivate();
-      const remaining = this._timer?.remaining ?? 0;
-      const score = this._calcScore(remaining, this._state.wrongCount);
+      var remaining = this._timer ? this._timer.remaining : 0;
+      var score = this._calcScore(remaining, this._state.wrongCount);
+      var isHighScore = this._saveHighScore(score);
       DD.Renderer.showResult(true, {
-        completed: this._state.totalCells, total: this._state.totalCells,
-        errors: this._state.wrongCount, timeRemaining: remaining,
-        score, isHighScore: this._saveHighScore(score),
-      });
+        completed: this._state.totalCells,
+        total: this._state.totalCells,
+        errors: this._state.wrongCount,
+        timeRemaining: remaining,
+        score: score,
+        isHighScore: isHighScore,
+      }, this._loadRanking());
     }
 
     _handleTimeOut() {
@@ -212,41 +180,47 @@
       this._state.setPhase('lose');
       this._input.deactivate();
       DD.Renderer.showResult(false, {
-        completed: this._state.currentIndex, total: this._state.totalCells,
-        errors: this._state.wrongCount, timeRemaining: 0, score: 0, isHighScore: false,
-      });
+        completed: this._state.currentIndex,
+        total: this._state.totalCells,
+        errors: this._state.wrongCount,
+        timeRemaining: 0,
+        score: 0,
+        isHighScore: false,
+      }, this._loadRanking());
     }
 
     _calcScore(timeRemaining, errors) {
       if (timeRemaining <= 0) return 0;
-      const accuracy = errors === 0 ? 1.5 : 1 / (1 + errors * 0.25);
+      var accuracy = errors === 0 ? 1.5 : 1 / (1 + errors * 0.25);
       return Math.max(0, Math.round(timeRemaining * 100 * accuracy));
     }
 
     _saveHighScore(score) {
       try {
-        const raw   = localStorage.getItem(DD.CONFIG.LS_KEY);
-        const store = raw ? JSON.parse(raw) : {};
-        if (score > (store[this._diffKey]?.score ?? -1)) {
-          store[this._diffKey] = { score, date: new Date().toISOString() };
+        var raw   = localStorage.getItem(DD.CONFIG.LS_KEY);
+        var store = raw ? JSON.parse(raw) : {};
+        var prev  = store[this._diffKey] ? store[this._diffKey].score : -1;
+        if (score > prev) {
+          store[this._diffKey] = { score: score, date: new Date().toISOString() };
           localStorage.setItem(DD.CONFIG.LS_KEY, JSON.stringify(store));
           return true;
         }
         return false;
-      } catch { return false; }
+      } catch(e) { return false; }
     }
 
     _bindPermanentUI() {
-      document.getElementById('js-btn-restart')?.addEventListener('click', () => this._setupGame());
-      document.getElementById('js-btn-mainmenu')?.addEventListener('click', () => this._openMenu());
-      document.getElementById('js-btn-start')?.addEventListener('click', () => this._startFromMenu());
-      document.getElementById('js-mode-toggle')?.addEventListener('click', () => this._input?.toggleSwipe());
-      DD.Renderer.bindMenuDiffCards((diffKey) => this._selectDiff(diffKey));
+      var self = this;
+      document.getElementById('js-btn-restart')?.addEventListener('click',  function() { self._setupGame(); });
+      document.getElementById('js-btn-mainmenu')?.addEventListener('click', function() { self._openMenu(); });
+      document.getElementById('js-btn-start')?.addEventListener('click',    function() { self._startFromMenu(); });
+      document.getElementById('js-mode-toggle')?.addEventListener('click',  function() { self._input && self._input.toggleSwipe(); });
+      DD.Renderer.bindMenuDiffCards(function(diffKey) { self._selectDiff(diffKey); });
     }
   }
 
   function boot() {
-    const game = new DirectionDashGame();
+    var game = new DirectionDashGame();
     game.init();
     window.__ddGame = game;
   }
