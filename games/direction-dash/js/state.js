@@ -15,13 +15,16 @@
     }
 
     setup(diffKey) {
-      var diff = DD.CONFIG.DIFFICULTIES[diffKey];
-      if (!diff) throw new Error('[Direction Dash] Unknown difficulty key: "' + diffKey + '"');
-      this._diffKey      = diffKey;
-      this._difficulty   = diff;
-      this._gridSize     = diff.gridSize;
-      this._totalCells   = diff.gridSize * diff.gridSize;
+      const diff = DD.CONFIG.DIFFICULTIES[diffKey];
+      if (!diff) {
+        throw new Error(`[Direction Dash] Unknown difficulty key: "${diffKey}"`);
+      }
+      this._diffKey    = diffKey;
+      this._difficulty = diff;
+      this._gridSize   = diff.gridSize;
+      this._totalCells = diff.gridSize * diff.gridSize;
       this._generateGrid();
+
       this._currentIndex = 0;
       this._wrongCount   = 0;
       this._correctCount = 0;
@@ -29,16 +32,23 @@
     }
 
     _generateGrid() {
-      var dirs = DD.CONFIG.DIRS;
+      const dirs = DD.CONFIG.DIRS;
       this._grid = Array.from(
         { length: this._totalCells },
-        function () { return dirs[Math.floor(Math.random() * dirs.length)]; }
+        () => dirs[Math.floor(Math.random() * dirs.length)]
       );
     }
 
-    setPhase(phase)    { this._phase = phase; }
-    registerCorrect()  { this._correctCount++; this._currentIndex++; }
-    registerWrong()    { this._wrongCount++; }
+    setPhase(phase) { this._phase = phase; }
+
+    registerCorrect() {
+      this._correctCount++;
+      this._currentIndex++;
+    }
+
+    registerWrong() {
+      this._wrongCount++;
+    }
 
     get phase()        { return this._phase; }
     get diffKey()      { return this._diffKey; }
@@ -49,7 +59,9 @@
     get currentIndex() { return this._currentIndex; }
     get wrongCount()   { return this._wrongCount; }
     get correctCount() { return this._correctCount; }
-    get expectedDir()  { return this._grid[this._currentIndex]; }
+
+    get expectedDir() { return this._grid[this._currentIndex]; }
+
     get isComplete()   { return this._currentIndex >= this._totalCells; }
   }
 

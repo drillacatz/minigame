@@ -1,7 +1,3 @@
-/* =====================================================================
-   reset.css  —  sensible baseline for MINIVERSE
-   ===================================================================== */
-
 *,
 *::before,
 *::after {
@@ -27,6 +23,7 @@ body {
   flex-direction: column;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color var(--t-base), color var(--t-base);
 }
 
 img,
@@ -61,14 +58,12 @@ select {
   font-family: inherit;
 }
 
-/* Remove default button focus ring; we provide custom styles */
 :focus-visible {
   outline: 2px solid var(--clr-cyan);
   outline-offset: 3px;
   border-radius: var(--r-sm);
 }
 
-/* Reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

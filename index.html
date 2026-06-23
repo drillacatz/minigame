@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="MINIVERSE – A collection of browser mini-games. No downloads. Just play.">
   <title>MINIVERSE</title>
+  <script>
+    try {
+      var t = localStorage.getItem('miniverse_theme_v1');
+      document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+    } catch (e) {}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -17,22 +23,30 @@
 </head>
 <body>
 
-  <!-- SITE HEADER -->
   <header class="site-header" role="banner">
     <div class="container site-header__inner">
       <a href="index.html" class="site-logo" aria-label="Miniverse home">
         <span class="site-logo__bracket">[</span>MINI<span class="site-logo__accent">VERSE</span><span class="site-logo__bracket">]</span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
-        <!-- Mute / unmute toggle -->
-        <button type="button" class="site-nav__sound" id="js-sound-toggle" aria-label="Mute sound" aria-pressed="false">
-          <svg class="site-nav__sound-icon site-nav__sound-icon--on" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.32v8.64c1.23-1.03 2-2.55 2-4.32z" opacity=".85"/><path d="M14.5 4.97v2.06c2.89.86 5 3.54 5 6.97s-2.11 6.11-5 6.97v2.06c4.01-.91 7-4.49 7-9.03s-2.99-8.12-7-9.03z" opacity=".6"/>
-          </svg>
-          <svg class="site-nav__sound-icon site-nav__sound-icon--off" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display:none">
-            <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M19.5 7.5l-7 7M12.5 7.5l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-          </svg>
-        </button>
+        <div class="site-nav__icon-group">
+          <button type="button" class="site-nav__icon-btn" id="js-theme-toggle" aria-label="Switch to light theme" aria-pressed="false">
+            <svg class="icon icon--theme-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+              <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg class="icon icon--theme-moon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+          <button type="button" class="site-nav__icon-btn" id="js-sound-toggle" aria-label="Mute sound" aria-pressed="false">
+            <svg class="icon icon--sound-on" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.32v8.64c1.23-1.03 2-2.55 2-4.32z" opacity=".85"/><path d="M14.5 4.97v2.06c2.89.86 5 3.54 5 6.97s-2.11 6.11-5 6.97v2.06c4.01-.91 7-4.49 7-9.03s-2.99-8.12-7-9.03z" opacity=".6"/>
+            </svg>
+            <svg class="icon icon--sound-off" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display:none">
+              <path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M19.5 7.5l-7 7M12.5 7.5l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+          </button>
+        </div>
         <a href="https://github.com/drillacatz/minigame" target="_blank" rel="noopener noreferrer"
            class="site-nav__github" aria-label="GitHub repository" data-sfx="click">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -44,10 +58,8 @@
     <div class="site-header__scan" aria-hidden="true"></div>
   </header>
 
-  <!-- MAIN -->
   <main class="site-main" role="main">
 
-    <!-- HERO -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="container hero__inner">
         <h1 class="hero__title" id="hero-title">MINIVERSE</h1>
@@ -60,7 +72,6 @@
       </div>
     </section>
 
-    <!-- GAMES GRID -->
     <section class="games-section" id="games" aria-labelledby="games-title">
       <div class="container">
         <header class="section-header">
@@ -73,22 +84,14 @@
 
   </main>
 
-  <!-- FOOTER -->
   <footer class="site-footer" role="contentinfo">
     <div class="container site-footer__inner">
       <p class="site-footer__copy">&copy; 2026 Drillacatz &mdash; Minigame</p>
     </div>
   </footer>
 
-  <!-- ============================================================
-       QUICK-LAUNCH MODAL
-       Shown when a game card is clicked. Lets the player pick a
-       difficulty and shows their best score for each — one tap on
-       a difficulty card navigates straight to the game.
-       ============================================================ -->
   <div class="launch-modal hidden" id="js-launch-modal"
        role="dialog" aria-modal="true" aria-labelledby="js-modal-title">
-    <!-- Clicking the backdrop closes the modal -->
     <div class="launch-modal__backdrop" id="js-modal-backdrop"></div>
     <div class="launch-modal__box">
       <button class="launch-modal__close" id="js-modal-close"
@@ -101,233 +104,15 @@
 
       <p class="launch-modal__prompt">// TAP A DIFFICULTY TO BEGIN</p>
 
-      <!-- Difficulty cards injected by JS -->
       <div class="launch-modal__diffs" id="js-modal-diffs"></div>
     </div>
   </div>
 
-  <!-- ============================================================
-       GAME REGISTRY + RENDERER + QUICK-LAUNCH MODAL LOGIC
-       ============================================================ -->
-  <script>
-  (function () {
-    'use strict';
-
-    /* ── GAME DATA ─────────────────────────────────────────────────
-       Each entry describes one game card.
-       `difficulties` — array of { key, label, meta, color }
-         When present, clicking the card opens the quick-launch modal
-         (difficulty picker) instead of navigating directly.
-         The chosen difficulty is passed as ?difficulty=<key> so
-         game.html can auto-start without showing its own pause menu.
-       `lsKey` — localStorage key used by that game to store scores,
-         read here to display per-difficulty best scores in the modal.
-    ─────────────────────────────────────────────────────────────── */
-    var GAMES = [
-      {
-        title:       'Direction Dash',
-        subtitle:    '',
-        thumbnail:   'assets/images/direction-dash.svg',
-        url:         'games/direction-dash/game.html',
-        accent:      '#00d4ff',
-        locked:      false,
-        tip:         'Match each glowing arrow before time runs out. Wrong move \u2212\u20091 second.',
-        lsKey:       'miniverse_dd_scores_v1',
-        difficulties: [
-          { key: 'ezpz',     label: 'EZPZ',     meta: '3\u00d73 \u00b7 9s', color: '#00d4ff' },
-          { key: 'whatever', label: 'WHATEVER',  meta: '4\u00d74 \u00b7 9s', color: '#9d4eff' },
-          { key: 'master',   label: 'MASTER',    meta: '5\u00d75 \u00b7 9s', color: '#ff2d8b' }
-        ]
-      },
-      {
-        title:     'Coming Soon',
-        subtitle:  '',
-        thumbnail: 'assets/images/coming-soon.svg',
-        url:       null,
-        accent:    '#ff2d8b',
-        locked:    true
-      },
-      {
-        title:     'Coming Soon',
-        subtitle:  '',
-        thumbnail: 'assets/images/coming-soon.svg',
-        url:       null,
-        accent:    '#9d4eff',
-        locked:    true
-      }
-    ];
-
-    /* ── Helpers ─────────────────────────────────────────────────── */
-    function esc(str) {
-      if (!str) return '';
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    function loadScores(lsKey) {
-      try {
-        var raw = lsKey ? localStorage.getItem(lsKey) : null;
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) { return {}; }
-    }
-
-    /* ── Card builder ────────────────────────────────────────────── */
-    function buildCard(game) {
-      var isPlayable = !game.locked && !!game.url;
-      var hasDiffs   = isPlayable && Array.isArray(game.difficulties) && game.difficulties.length > 0;
-
-      // Games with difficulty selection use a <div> that opens the modal.
-      // Simple (difficulty-less) games use a plain <a> link.
-      var tag = (isPlayable && !hasDiffs) ? 'a' : 'div';
-      var el  = document.createElement(tag);
-      el.className = 'game-card' + (game.locked ? ' game-card--locked' : '');
-      el.setAttribute('role', 'listitem');
-
-      if (isPlayable) {
-        el.setAttribute('data-sfx', 'click');
-        if (hasDiffs) {
-          el.setAttribute('tabindex', '0');
-          el.setAttribute('aria-label', 'Select difficulty for ' + game.title);
-          el.style.cursor = 'pointer';
-          // Store game ref so the listener can close over it cleanly
-          (function (g) {
-            el.addEventListener('click', function () { openModal(g); });
-            el.addEventListener('keydown', function (e) {
-              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(g); }
-            });
-          }(game));
-        } else {
-          el.href = game.url;
-          el.setAttribute('aria-label', 'Play ' + game.title);
-        }
-      }
-
-      if (game.accent) el.style.setProperty('--card-accent', game.accent);
-
-      el.innerHTML =
-        '<img class="game-card__img" src="' + esc(game.thumbnail) + '" alt="' + esc(game.title) +
-        '" loading="lazy" onerror="this.src=\'assets/images/coming-soon.svg\'">' +
-        '<div class="game-card__banner">' +
-          '<p class="game-card__title">' + esc(game.title) + '</p>' +
-          (game.subtitle ? '<p class="game-card__sub">' + esc(game.subtitle) + '</p>' : '') +
-        '</div>' +
-        (game.locked ? '<div class="game-card__locked-badge">COMING SOON</div>' : '');
-
-      return el;
-    }
-
-    /* ── Quick-launch modal ──────────────────────────────────────── */
-    function openModal(game) {
-      var modal = document.getElementById('js-launch-modal');
-      if (!modal) return;
-
-      // Title + tip
-      document.getElementById('js-modal-title').textContent = game.title;
-      document.getElementById('js-modal-tip').textContent   = game.tip || '';
-
-      // Best scores from localStorage
-      var scores = loadScores(game.lsKey);
-
-      // Build difficulty cards (each is an <a> that navigates on click)
-      var diffsEl = document.getElementById('js-modal-diffs');
-      diffsEl.innerHTML = (game.difficulties || []).map(function (diff) {
-        var entry     = scores[diff.key];
-        var score     = (entry && typeof entry.score === 'number') ? entry.score : null;
-        var scoreHtml = score !== null
-          ? 'BEST&nbsp;<span class="ldiff__score-val">' + score + '</span>'
-          : '<span class="ldiff__score-empty">\u2014</span>';
-
-        return '<a class="ldiff"' +
-          ' href="' + esc(game.url) + '?difficulty=' + esc(diff.key) + '"' +
-          ' data-diff="' + esc(diff.key) + '"' +
-          ' data-sfx="click"' +
-          ' aria-label="Play ' + esc(game.title) + ' on ' + esc(diff.label) + '">' +
-          '<span class="ldiff__name" style="color:' + esc(diff.color) + '">' + esc(diff.label) + '</span>' +
-          '<span class="ldiff__meta">' + esc(diff.meta) + '</span>' +
-          '<span class="ldiff__score">' + scoreHtml + '</span>' +
-        '</a>';
-      }).join('');
-
-      modal.classList.remove('hidden');
-      document.body.classList.add('modal-open');
-
-      // Keyboard accessibility: focus the close button
-      setTimeout(function () {
-        var closeBtn = document.getElementById('js-modal-close');
-        if (closeBtn) closeBtn.focus();
-      }, 60);
-    }
-
-    function closeModal() {
-      var modal = document.getElementById('js-launch-modal');
-      if (!modal || modal.classList.contains('hidden')) return;
-      modal.classList.add('hidden');
-      document.body.classList.remove('modal-open');
-    }
-
-    /* ── Modal event wiring ─────────────────────────────────────── */
-    function bindModal() {
-      document.getElementById('js-modal-backdrop')
-        .addEventListener('click', closeModal);
-
-      document.getElementById('js-modal-close')
-        .addEventListener('click', closeModal);
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeModal();
-      });
-    }
-
-    /* ── Render cards ───────────────────────────────────────────── */
-    function render() {
-      var grid = document.getElementById('js-games-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-      if (!GAMES || !GAMES.length) {
-        grid.innerHTML = '<p class="games-grid__placeholder">No games yet.</p>';
-        return;
-      }
-      var frag = document.createDocumentFragment();
-      for (var i = 0; i < GAMES.length; i++) frag.appendChild(buildCard(GAMES[i]));
-      grid.appendChild(frag);
-      bindModal();
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', render);
-    } else {
-      render();
-    }
-  }());
-  </script>
-
-  <!-- ============================================================
-       AUDIO — lobby BGM + click SFX (logic lives in js/audio.js)
-       ============================================================ -->
+  <script src="js/data/games.js"></script>
+  <script src="js/overlay.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/audio.js"></script>
-  <script>
-  (function () {
-    'use strict';
-
-    MiniverseAudio.init({ basePath: '' });
-    MiniverseAudio.playBgm('lobby');
-
-    var btn   = document.getElementById('js-sound-toggle');
-    var onIco = btn.querySelector('.site-nav__sound-icon--on');
-    var offIco= btn.querySelector('.site-nav__sound-icon--off');
-
-    function syncIcon(muted) {
-      onIco.style.display  = muted ? 'none' : '';
-      offIco.style.display = muted ? '' : 'none';
-      btn.setAttribute('aria-pressed', String(muted));
-      btn.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound');
-    }
-
-    syncIcon(MiniverseAudio.isMuted());
-    btn.addEventListener('click', function () {
-      syncIcon(MiniverseAudio.toggleMute());
-    });
-  }());
-  </script>
+  <script src="js/main.js"></script>
 
 </body>
 </html>

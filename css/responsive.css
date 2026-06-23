@@ -1,22 +1,15 @@
-/* =====================================================================
-   responsive.css  —  5 columns desktop → 2 columns mobile
-   ===================================================================== */
-
-/* ── Large desktop (≥ 1280px) — keep 5 columns ─────────────────── */
 @media (min-width: 1280px) {
   .games-grid {
     grid-template-columns: repeat(5, 1fr);
   }
 }
 
-/* ── Tablet landscape / small desktop (1024–1279px) — 4 cols ─── */
 @media (max-width: 1279px) and (min-width: 1024px) {
   .games-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* ── Tablet portrait (768–1023px) — 3 cols ──────────────────── */
 @media (max-width: 1023px) and (min-width: 768px) {
   .games-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -27,7 +20,6 @@
   }
 }
 
-/* ── Mobile (< 768px) — 2 cols ───────────────────────────────── */
 @media (max-width: 767px) {
   :root {
     --container-pad: var(--sp-4);
@@ -72,13 +64,11 @@
     gap: var(--sp-3);
   }
 
-  /* Hide the card subtitle on very small cards */
   .game-card__sub {
     display: none;
   }
 }
 
-/* ── Very small screens (< 360px) — tighten further ────────── */
 @media (max-width: 359px) {
   :root {
     --container-pad: var(--sp-3);

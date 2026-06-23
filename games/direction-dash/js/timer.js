@@ -3,14 +3,15 @@
 
   class Timer {
     constructor({ totalSeconds, onTick, onExpire }) {
-      this._total      = totalSeconds;
-      this._onTick     = onTick    || function(){};
-      this._onExpire   = onExpire  || function(){};
-      this._startedAt  = null;
-      this._penaltyAcc = 0;
-      this._rafId      = null;
-      this._stopped    = false;
-      this._expired    = false;
+      this._total       = totalSeconds;
+      this._onTick      = onTick    || (() => {});
+      this._onExpire    = onExpire  || (() => {});
+
+      this._startedAt   = null;
+      this._penaltyAcc  = 0;
+      this._rafId       = null;
+      this._stopped     = false;
+      this._expired     = false;
     }
 
     start() {
@@ -23,27 +24,43 @@
 
     stop() {
       this._stopped = true;
-      if (this._rafId !== null) { cancelAnimationFrame(this._rafId); this._rafId = null; }
+      if (this._rafId !== null) {
+        cancelAnimationFrame(this._rafId);
+        this._rafId = null;
+      }
     }
 
     penalize(seconds) {
       this._penaltyAcc += seconds;
-      if (this._computeRemaining() <= 0 && !this._expired) this._triggerExpiry();
+      const remaining = this._computeRemaining();
+      if (remaining <= 0 && !this._expired) {
+        this._triggerExpiry();
+      }
     }
 
-    get remaining() { return this._computeRemaining(); }
+    get remaining() {
+      return this._computeRemaining();
+    }
 
     _computeRemaining() {
       if (this._startedAt === null) return this._total;
-      return Math.max(0, this._total - (performance.now() - this._startedAt) / 1000 - this._penaltyAcc);
+      const elapsed = (performance.now() - this._startedAt) / 1000;
+      return Math.max(0, this._total - elapsed - this._penaltyAcc);
     }
 
     _tick() {
       if (this._stopped) return;
-      var remaining = this._computeRemaining();
-      var fraction  = remaining / this._total;
+
+      const remaining = this._computeRemaining();
+      const fraction  = remaining / this._total;
+
       this._onTick(remaining, fraction);
-      if (remaining <= 0) { this._triggerExpiry(); return; }
+
+      if (remaining <= 0) {
+        this._triggerExpiry();
+        return;
+      }
+
       this._rafId = requestAnimationFrame(() => this._tick());
     }
 

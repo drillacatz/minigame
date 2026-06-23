@@ -1,8 +1,3 @@
-/* =====================================================================
-   layout.css  —  page skeleton, container, game-card grid
-   ===================================================================== */
-
-/* ── Container ─────────────────────────────────────────────────── */
 .container {
   width: 100%;
   max-width: var(--container-max);
@@ -10,14 +5,12 @@
   padding-inline: var(--container-pad);
 }
 
-/* ── Site shell ────────────────────────────────────────────────── */
 .site-main {
-  flex: 1;               /* pushes footer to bottom  */
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* ── Hero ──────────────────────────────────────────────────────── */
 .hero {
   position: relative;
   padding-block: var(--sp-20) var(--sp-16);
@@ -29,7 +22,6 @@
   z-index: 1;
 }
 
-/* Animated background grid lines */
 .hero__grid-deco {
   position: absolute;
   inset: 0;
@@ -61,7 +53,6 @@
   50%       { opacity: 0.8; }
 }
 
-/* ── Games section ─────────────────────────────────────────────── */
 .games-section {
   padding-block: var(--sp-12) var(--sp-20);
 }
@@ -70,7 +61,6 @@
   margin-bottom: var(--sp-8);
 }
 
-/* ── Games grid ────────────────────────────────────────────────── */
 .games-grid {
   display: grid;
   grid-template-columns: repeat(var(--card-cols-desktop), 1fr);

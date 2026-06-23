@@ -1,40 +1,22 @@
-/* =====================================================================
-   title.css  —  Direction Dash title / detail screen
-   ===================================================================== */
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:      #05050f;
-  --surface: #0c0c1e;
-  --border:  #1e1e42;
-  --cyan:    #00d4ff;
-  --pink:    #ff2d8b;
-  --purple:  #9d4eff;
-  --green:   #0aff9d;
-  --text:    #e2e2f2;
-  --dim:     #6b6b99;
-  --font-d:  'Orbitron', monospace;
-  --font-b:  'Exo 2', sans-serif;
-}
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-b);
-  background: var(--bg);
-  color: var(--text);
+  font-family: var(--font-body);
+  background: var(--clr-bg);
+  color: var(--clr-text);
   min-height: 100dvh;
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   background-image:
-    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    linear-gradient(var(--clr-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--clr-grid-line) 1px, transparent 1px);
   background-size: 40px 40px;
+  transition: background-color var(--t-base), color var(--t-base);
 }
 
-/* ── Back link ──────────────────────────────────────────────────── */
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -42,18 +24,38 @@ body {
   position: fixed;
   top: 16px; left: 20px;
   z-index: 50;
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: var(--dim);
+  color: var(--clr-text-dim);
   text-decoration: none;
   transition: color 0.15s;
 }
-.back-link:hover { color: var(--cyan); }
+.back-link:hover { color: var(--clr-cyan); }
 .back-link__arrow { font-size: 1.1rem; }
 
-/* ── Page wrapper ───────────────────────────────────────────────── */
+.title-icon-group {
+  position: fixed;
+  top: 16px; right: 20px;
+  z-index: 50;
+  display: flex;
+  gap: 14px;
+}
+.title-icon-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: var(--clr-text-dim);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.title-icon-btn:hover { color: var(--clr-cyan); }
+.title-icon-btn[aria-pressed="true"] { color: var(--clr-pink); }
+#js-theme-toggle[aria-pressed="true"] { color: var(--clr-gold); }
+
 .title-page {
   max-width: 1100px;
   margin-inline: auto;
@@ -63,62 +65,59 @@ body {
   gap: 56px;
 }
 
-/* ── Game identity ──────────────────────────────────────────────── */
 .game-identity__title {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: clamp(2.8rem, 8vw, 6rem);
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--clr-text);
   margin-bottom: 20px;
 }
 .game-identity__title--accent {
-  color: var(--cyan);
-  text-shadow: 0 0 30px rgba(0,212,255,0.6), 0 0 60px rgba(0,212,255,0.2);
+  color: var(--clr-cyan);
+  text-shadow: 0 0 30px var(--clr-cyan-glow), 0 0 60px rgba(0, 212, 255, 0.2);
 }
 .game-identity__desc {
   max-width: 50ch;
   font-size: 1.05rem;
   font-weight: 300;
-  color: var(--dim);
+  color: var(--clr-text-dim);
   line-height: 1.85;
   margin-bottom: 24px;
 }
 
-/* ── High-score badges ──────────────────────────────────────────── */
 .scores-row { display: flex; flex-wrap: wrap; gap: 12px; }
 
 .score-badge {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--clr-border);
   padding: 8px 16px;
   border-radius: 4px;
-  background: var(--surface);
+  background: var(--clr-surface);
   min-width: 80px;
 }
 .score-badge__diff {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.60rem;
   letter-spacing: 0.2em;
-  color: var(--dim);
+  color: var(--clr-text-dim);
 }
 .score-badge__score {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--cyan);
+  color: var(--clr-cyan);
 }
-.score-badge--no-score .score-badge__score { color: var(--border); }
+.score-badge--no-score .score-badge__score { color: var(--clr-border); }
 
-/* ── Difficulty section ─────────────────────────────────────────── */
 .diff-section__heading {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.70rem;
   letter-spacing: 0.3em;
-  color: var(--dim);
+  color: var(--clr-text-dim);
   margin-bottom: 24px;
 }
 
@@ -128,26 +127,24 @@ body {
   gap: 16px;
 }
 
-/* ── Diff card base ─────────────────────────────────────────────── */
 .diff-card {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 28px 24px 20px;      /* extra bottom padding for PLAY btn */
-  border: 1px solid var(--border);
+  padding: 28px 24px 20px;
+  border: 1px solid var(--clr-border);
   border-radius: 6px;
-  background: var(--surface);
+  background: var(--clr-surface);
   text-decoration: none;
-  color: var(--text);
+  color: var(--clr-text);
   overflow: hidden;
   transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
-  min-height: 260px;             /* consistent card height */
+  min-height: 260px;
 }
 .diff-card:hover { transform: translateY(-4px); }
 
-/* HUD corner brackets */
 .diff-card__hud-corner {
   position: absolute;
   width: 12px; height: 12px;
@@ -159,13 +156,13 @@ body {
 .diff-card__hud-corner--br { bottom: 8px; right: 8px; border-bottom: 2px solid; border-right: 2px solid; }
 
 .diff-card__key {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.65rem;
   letter-spacing: 0.15em;
-  color: var(--dim);
+  color: var(--clr-text-dim);
 }
 .diff-card__name {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 1.6rem;
   font-weight: 900;
   line-height: 1;
@@ -173,7 +170,7 @@ body {
 }
 .diff-card__mode {
   font-size: 0.80rem;
-  color: var(--dim);
+  color: var(--clr-text-dim);
   letter-spacing: 0.1em;
 }
 .diff-card__stats {
@@ -189,25 +186,24 @@ body {
   align-items: center;
 }
 .stat-label {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.60rem;
   letter-spacing: 0.18em;
-  color: var(--dim);
+  color: var(--clr-text-dim);
 }
 .stat-val {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.80rem;
   font-weight: 700;
 }
 
-/* ── PLAY button — large, centred, bottom of card ───────────────── */
 .diff-card__play-btn {
   margin-top: auto;
   align-self: center;
   width: calc(100% - 8px);
   padding: 12px 0;
   text-align: center;
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.85rem;
   font-weight: 900;
   letter-spacing: 0.3em;
@@ -217,37 +213,35 @@ body {
 }
 .diff-card:hover .diff-card__play-btn { letter-spacing: 0.45em; }
 
-/* ── Per-difficulty colours ─────────────────────────────────────── */
-.diff-card--ezpz     { --accent: var(--cyan);   --glow: rgba(0,212,255,0.25); }
-.diff-card--whatever { --accent: var(--purple);  --glow: rgba(157,78,255,0.25); }
-.diff-card--master   { --accent: var(--pink);    --glow: rgba(255,45,139,0.25); }
+.diff-card--ezpz     { --accent: var(--clr-cyan);   --glow: var(--clr-cyan-dim); }
+.diff-card--whatever { --accent: var(--clr-purple); --glow: var(--clr-purple-dim); }
+.diff-card--master   { --accent: var(--clr-pink);   --glow: var(--clr-pink-dim); }
 
-.diff-card--ezpz     .diff-card__name, .diff-card--ezpz     .stat-val { color: var(--cyan);   }
-.diff-card--whatever .diff-card__name, .diff-card--whatever .stat-val { color: var(--purple); }
-.diff-card--master   .diff-card__name, .diff-card--master   .stat-val { color: var(--pink);   }
+.diff-card--ezpz     .diff-card__name, .diff-card--ezpz     .stat-val { color: var(--clr-cyan);   }
+.diff-card--whatever .diff-card__name, .diff-card--whatever .stat-val { color: var(--clr-purple); }
+.diff-card--master   .diff-card__name, .diff-card--master   .stat-val { color: var(--clr-pink);   }
 
-.diff-card--ezpz     .diff-card__hud-corner { border-color: var(--cyan);   }
-.diff-card--whatever .diff-card__hud-corner { border-color: var(--purple); }
-.diff-card--master   .diff-card__hud-corner { border-color: var(--pink);   }
+.diff-card--ezpz     .diff-card__hud-corner { border-color: var(--clr-cyan);   }
+.diff-card--whatever .diff-card__hud-corner { border-color: var(--clr-purple); }
+.diff-card--master   .diff-card__hud-corner { border-color: var(--clr-pink);   }
 
-.diff-card--ezpz     .diff-card__play-btn { color: var(--cyan);   border-color: var(--cyan);   }
-.diff-card--whatever .diff-card__play-btn { color: var(--purple); border-color: var(--purple); }
-.diff-card--master   .diff-card__play-btn { color: var(--pink);   border-color: var(--pink);   }
+.diff-card--ezpz     .diff-card__play-btn { color: var(--clr-cyan);   border-color: var(--clr-cyan);   }
+.diff-card--whatever .diff-card__play-btn { color: var(--clr-purple); border-color: var(--clr-purple); }
+.diff-card--master   .diff-card__play-btn { color: var(--clr-pink);   border-color: var(--clr-pink);   }
 
-.diff-card--ezpz:hover     { border-color: var(--cyan);   box-shadow: 0 0 24px var(--glow), 0 8px 32px rgba(0,0,0,0.5); }
-.diff-card--whatever:hover { border-color: var(--purple); box-shadow: 0 0 24px var(--glow), 0 8px 32px rgba(0,0,0,0.5); }
-.diff-card--master:hover   { border-color: var(--pink);   box-shadow: 0 0 24px var(--glow), 0 8px 32px rgba(0,0,0,0.5); }
+.diff-card--ezpz:hover     { border-color: var(--clr-cyan);   box-shadow: 0 0 24px var(--glow), 0 8px 32px rgba(0,0,0,0.3); }
+.diff-card--whatever:hover { border-color: var(--clr-purple); box-shadow: 0 0 24px var(--glow), 0 8px 32px rgba(0,0,0,0.3); }
+.diff-card--master:hover   { border-color: var(--clr-pink);   box-shadow: 0 0 24px var(--glow), 0 8px 32px rgba(0,0,0,0.3); }
 
-.diff-card--ezpz:hover     .diff-card__play-btn { background: rgba(0,212,255,0.12);   box-shadow: 0 0 16px rgba(0,212,255,0.4); }
-.diff-card--whatever:hover .diff-card__play-btn { background: rgba(157,78,255,0.12);  box-shadow: 0 0 16px rgba(157,78,255,0.4); }
-.diff-card--master:hover   .diff-card__play-btn { background: rgba(255,45,139,0.12);  box-shadow: 0 0 16px rgba(255,45,139,0.4); }
+.diff-card--ezpz:hover     .diff-card__play-btn { background: var(--clr-cyan-dim);   box-shadow: 0 0 16px var(--clr-cyan-glow); }
+.diff-card--whatever:hover .diff-card__play-btn { background: var(--clr-purple-dim); box-shadow: 0 0 16px rgba(157,78,255,0.4); }
+.diff-card--master:hover   .diff-card__play-btn { background: var(--clr-pink-dim);   box-shadow: 0 0 16px rgba(255,45,139,0.4); }
 
-/* ── How to play ────────────────────────────────────────────────── */
 .howto__heading {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.70rem;
   letter-spacing: 0.3em;
-  color: var(--dim);
+  color: var(--clr-text-dim);
   margin-bottom: 24px;
 }
 .howto__steps { display: flex; flex-direction: column; gap: 20px; }
@@ -256,22 +250,21 @@ body {
   gap: 20px;
   align-items: flex-start;
   font-size: 0.9rem;
-  color: var(--dim);
-  border-left: 1px solid var(--border);
+  color: var(--clr-text-dim);
+  border-left: 1px solid var(--clr-border);
   padding-left: 20px;
 }
-.howto__step strong { display: block; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+.howto__step strong { display: block; color: var(--clr-text); font-weight: 600; margin-bottom: 4px; }
 .howto__num {
-  font-family: var(--font-d);
+  font-family: var(--font-display);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--cyan);
+  color: var(--clr-cyan);
   min-width: 24px;
   padding-top: 2px;
 }
 
-/* ── Responsive ─────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .diff-cards { grid-template-columns: 1fr; gap: 12px; }
   .title-page { padding: 70px 16px 40px; gap: 40px; }

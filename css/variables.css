@@ -1,88 +1,115 @@
-/* =====================================================================
-   variables.css  —  design tokens for MINIVERSE
-   Cyberpunk / HUD aesthetic inspired by Stellar Blade
-   ===================================================================== */
+:root,
+[data-theme="dark"] {
+  --clr-bg: #05050f;
+  --clr-surface: #11112a;
+  --clr-surface-2: #181838;
+  --clr-border: #272752;
+  --clr-translucent: rgba(8, 8, 22, 0.85);
 
-:root {
-  /* ── Palette ─────────────────────────────────── */
-  --clr-bg:        #05050f;   /* near-black with blue tint  */
-  --clr-surface:   #0c0c1e;   /* card backgrounds            */
-  --clr-surface-2: #131328;   /* slightly lighter panels     */
-  --clr-border:    #1e1e42;   /* subtle borders              */
-
-  --clr-cyan:      #00d4ff;   /* primary accent              */
-  --clr-cyan-dim:  rgba(0, 212, 255, 0.15);
+  --clr-cyan: #00d4ff;
+  --clr-cyan-dim: rgba(0, 212, 255, 0.15);
   --clr-cyan-glow: rgba(0, 212, 255, 0.4);
-  --clr-pink:      #ff2d8b;   /* secondary accent            */
-  --clr-pink-dim:  rgba(255, 45, 139, 0.15);
-  --clr-green:     #0aff9d;   /* success                     */
-  --clr-red:       #ff3f3f;   /* error / danger              */
-  --clr-gold:      #ffd700;   /* score / highlight           */
+  --clr-pink: #ff2d8b;
+  --clr-pink-dim: rgba(255, 45, 139, 0.15);
+  --clr-purple: #9d4eff;
+  --clr-purple-dim: rgba(157, 78, 255, 0.15);
+  --clr-green: #0aff9d;
+  --clr-red: #ff5c5c;
+  --clr-gold: #ffd700;
 
-  --clr-text:      #e2e2f2;   /* primary text                */
-  --clr-text-dim:  #6b6b99;   /* muted text                  */
-  --clr-text-inv:  #05050f;   /* text on bright backgrounds  */
+  --clr-text: #f1f2fc;
+  --clr-text-dim: #9496c4;
+  --clr-text-inv: #05050f;
 
-  /* ── Typography ─────────────────────────────── */
+  --clr-overlay-backdrop: rgba(6, 6, 18, 0.78);
+  --clr-overlay-soft: rgba(6, 6, 18, 0.32);
+  --clr-grid-line: rgba(0, 212, 255, 0.05);
+  --clr-card-tint: rgba(255, 255, 255, 0.03);
+  --clr-track: rgba(255, 255, 255, 0.07);
+
   --font-display: 'Orbitron', 'Courier New', monospace;
-  --font-body:    'Exo 2', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
 
-  --text-xs:   0.70rem;
-  --text-sm:   0.85rem;
+  --text-xs: 0.70rem;
+  --text-sm: 0.85rem;
   --text-base: 1.00rem;
-  --text-md:   1.15rem;
-  --text-lg:   1.35rem;
-  --text-xl:   1.75rem;
-  --text-2xl:  2.25rem;
-  --text-3xl:  3.50rem;
+  --text-md: 1.15rem;
+  --text-lg: 1.35rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3.50rem;
 
-  --weight-light:  300;
-  --weight-reg:    400;
-  --weight-semi:   600;
-  --weight-bold:   700;
-  --weight-black:  900;
+  --weight-light: 300;
+  --weight-reg: 400;
+  --weight-semi: 600;
+  --weight-bold: 700;
+  --weight-black: 900;
 
   --tracking-tight: -0.02em;
-  --tracking-wide:   0.12em;
-  --tracking-wider:  0.25em;
+  --tracking-wide: 0.12em;
+  --tracking-wider: 0.25em;
 
-  /* ── Spacing scale ───────────────────────────── */
-  --sp-1:  0.25rem;
-  --sp-2:  0.50rem;
-  --sp-3:  0.75rem;
-  --sp-4:  1.00rem;
-  --sp-5:  1.25rem;
-  --sp-6:  1.50rem;
-  --sp-8:  2.00rem;
+  --sp-1: 0.25rem;
+  --sp-2: 0.50rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1.00rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.50rem;
+  --sp-8: 2.00rem;
   --sp-10: 2.50rem;
   --sp-12: 3.00rem;
   --sp-16: 4.00rem;
   --sp-20: 5.00rem;
 
-  /* ── Radius ──────────────────────────────────── */
-  --r-sm:   3px;
-  --r-md:   6px;
-  --r-lg:  12px;
-  --r-xl:  20px;
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-lg: 12px;
+  --r-xl: 20px;
 
-  /* ── Shadows / glows ─────────────────────────── */
-  --glow-cyan:  0 0 12px var(--clr-cyan-glow), 0 0 30px rgba(0,212,255,0.2);
-  --glow-pink:  0 0 12px rgba(255,45,139,0.5), 0 0 30px rgba(255,45,139,0.2);
-  --glow-green: 0 0 12px rgba(10,255,157,0.5), 0 0 30px rgba(10,255,157,0.2);
+  --glow-cyan: 0 0 12px var(--clr-cyan-glow), 0 0 30px rgba(0, 212, 255, 0.2);
+  --glow-pink: 0 0 12px rgba(255, 45, 139, 0.5), 0 0 30px rgba(255, 45, 139, 0.2);
+  --glow-purple: 0 0 12px rgba(157, 78, 255, 0.5), 0 0 30px rgba(157, 78, 255, 0.2);
+  --glow-green: 0 0 12px rgba(10, 255, 157, 0.5), 0 0 30px rgba(10, 255, 157, 0.2);
 
-  /* ── Transitions ─────────────────────────────── */
-  --ease:     cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-out: cubic-bezier(0.00, 0.00, 0.20, 1.00);
-  --t-fast:   120ms var(--ease);
-  --t-base:   220ms var(--ease);
-  --t-slow:   400ms var(--ease-out);
+  --t-fast: 120ms var(--ease);
+  --t-base: 220ms var(--ease);
+  --t-slow: 400ms var(--ease-out);
 
-  /* ── Layout ──────────────────────────────────── */
   --container-max: 1400px;
   --container-pad: var(--sp-6);
 
-  /* ── Game-card grid ──────────────────────────── */
   --card-cols-desktop: 5;
-  --card-cols-mobile:  2;
+  --card-cols-mobile: 2;
   --card-gap: var(--sp-4);
+}
+
+[data-theme="light"] {
+  --clr-bg: #f3f5ff;
+  --clr-surface: #ffffff;
+  --clr-surface-2: #eef0fb;
+  --clr-border: #d9dcf2;
+  --clr-translucent: rgba(255, 255, 255, 0.86);
+
+  --clr-cyan: #0091c7;
+  --clr-cyan-dim: rgba(0, 145, 199, 0.12);
+  --clr-cyan-glow: rgba(0, 145, 199, 0.35);
+  --clr-pink: #d6196e;
+  --clr-pink-dim: rgba(214, 25, 110, 0.12);
+  --clr-purple: #7a35d6;
+  --clr-purple-dim: rgba(122, 53, 214, 0.12);
+  --clr-green: #0a9e63;
+  --clr-red: #d62828;
+  --clr-gold: #b8860b;
+
+  --clr-text: #14152c;
+  --clr-text-dim: #5b5d80;
+  --clr-text-inv: #ffffff;
+
+  --clr-overlay-backdrop: rgba(243, 245, 255, 0.88);
+  --clr-overlay-soft: rgba(243, 245, 255, 0.55);
+  --clr-grid-line: rgba(0, 0, 0, 0.04);
+  --clr-card-tint: rgba(10, 10, 40, 0.03);
+  --clr-track: rgba(0, 0, 0, 0.07);
 }
